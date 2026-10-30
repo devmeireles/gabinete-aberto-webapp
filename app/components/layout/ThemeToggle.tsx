@@ -73,14 +73,14 @@ export const ThemeToggle: React.FC = () => {
             onClick={cycleTheme}
             aria-label={`Alternar tema visual (atual: ${getLabel()})`}
             title={`Alternar tema visual: ${getLabel()}`}
-            className="inline-flex items-center gap-1.5 p-2 rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] text-xs font-medium"
+            className="inline-flex items-center gap-1.5 p-2 rounded border border-border bg-surface text-text-muted hover:text-text hover:bg-surface-hover transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring text-xs font-medium"
         >
             {theme === 'dark' ? (
-                <Moon className="w-4 h-4 text-[var(--color-accent)]" aria-hidden="true" />
+                <Moon className="w-4 h-4 text-accent" aria-hidden="true" />
             ) : theme === 'light' ? (
-                <Sun className="w-4 h-4 text-[var(--color-accent)]" aria-hidden="true" />
+                <Sun className="w-4 h-4 text-accent" aria-hidden="true" />
             ) : (
-                <Monitor className="w-4 h-4 text-[var(--color-text-muted)]" aria-hidden="true" />
+                <Monitor className="w-4 h-4 text-text-muted" aria-hidden="true" />
             )}
             <span className="hidden lg:inline text-[11px] font-sans">
                 {theme === 'dark' ? 'Escuro' : theme === 'light' ? 'Claro' : 'Auto'}

@@ -9,14 +9,6 @@ import { useDashboardFilters, useDashboardFiltersActions } from "@/app/contexts/
 import { useLegislaturas } from "@/app/hooks/use-legislaturas";
 
 export const DashboardView = () => {
-    // const [legislaturas, setLegislaturas] = useState<ILegislatura[]>([]);
-    // const [selectedLegislaturaId, setSelectedLegislaturaId] = useState<number>(57);
-    // const [metrics, setMetrics] = useState<IOverviewMetrics | null>(null);
-
-    // // Month filters
-    // const [fromMonth, setFromMonth] = useState<string>('2026-01');
-    // const [toMonth, setToMonth] = useState<string>('2026-10');
-
     const { fromMonth, legislaturaId, toMonth } = useDashboardFilters();
     const { setFromMonth, setLegislaturaId, setToMonth } = useDashboardFiltersActions();
     const { data: legislaturas = [], isLoading: isLoadingLegislaturas } = useLegislaturas();

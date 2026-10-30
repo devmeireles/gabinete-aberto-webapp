@@ -1,0 +1,66 @@
+"use client";
+
+import { DeputyAvatar } from "@/app/components/ui/DeputyAvatar";
+import { useDeputadosFilters, useDeputadosFiltersActions } from "@/app/contexts/deputados-filters.context";
+import { useDeputados } from "@/app/hooks/use-deputados";
+import { useRouter } from "next/navigation";
+
+
+export const DeputadosView = () => {
+    const router = useRouter();
+    const filters = useDeputadosFilters();
+    const { setFilter, setPagina, reset } = useDeputadosFiltersActions();
+    const { data: deputados, isPending, isPlaceholderData, isError } = useDeputados();
+
+    const handleOpenDossier = (deputadoId: number) => {
+        router.push(`/deputados/${deputadoId}`);
+    };
+
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {deputados?.map((deputado) => (
+                <div
+                    key={deputado.id}
+                    className="rounded-lg border border-border bg-surface p-4 flex flex-col justify-between hover:border-primary hover:shadow-xs transition-all group"
+                >
+                    <div className="flex items-start gap-3">
+                        {/* Official Portrait with robust fallback */}
+                        <div
+                            onClick={() => console.log(deputado.id)}
+                            className="cursor-pointer transition-transform group-hover:scale-105"
+                            title={`Abrir Dossiê de ${deputado.nome}`}
+                        >
+                            <DeputyAvatar
+                                urlFoto={deputado.urlFoto}
+                                nome={deputado.nome}
+                                size="md"
+                            />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                            <h3
+                                onClick={() => handleOpenDossier(deputado.id)}
+                                className="text-sm font-bold text-text truncate cursor-pointer hover:text-primary transition-colors"
+                                title={`Abrir Dossiê de ${deputado.nome}`}
+                            >
+                                {deputado.nome}
+                            </h3>
+
+                            <div className="flex items-center gap-1.5 text-xs text-text-muted mt-0.5">
+                                <span className="font-semibold text-primary">
+                                    {deputado.siglaPartido}
+                                </span>
+                                <span aria-hidden="true">·</span>
+                                <span>{deputado.siglaUf}</span>
+                            </div>
+
+                            <div className="text-[11px] text-text-subtle mt-1">
+                                Situação: {deputado.situacao}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
