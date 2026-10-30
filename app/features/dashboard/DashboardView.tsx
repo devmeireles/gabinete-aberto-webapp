@@ -5,15 +5,21 @@ import React, { useState } from "react";
 import { Calendar, Users, Building2, Receipt, ArrowRight, Clock, AlertCircle } from 'lucide-react';
 import { IOverviewMetrics } from "@/app/interfaces/overview.interface";
 import { formatDate, formatDateTime } from "@/app/lib/formartters.lib";
+import { useDashboardFilters, useDashboardFiltersActions } from "@/app/contexts/dashboard-filters.context";
+import { useLegislaturas } from "@/app/hooks/use-legislaturas";
 
 export const DashboardView = () => {
-    const [legislaturas, setLegislaturas] = useState<ILegislatura[]>([]);
-    const [selectedLegislaturaId, setSelectedLegislaturaId] = useState<number>(57);
-    const [metrics, setMetrics] = useState<IOverviewMetrics | null>(null);
+    // const [legislaturas, setLegislaturas] = useState<ILegislatura[]>([]);
+    // const [selectedLegislaturaId, setSelectedLegislaturaId] = useState<number>(57);
+    // const [metrics, setMetrics] = useState<IOverviewMetrics | null>(null);
 
-    // Month filters
-    const [fromMonth, setFromMonth] = useState<string>('2026-01');
-    const [toMonth, setToMonth] = useState<string>('2026-10');
+    // // Month filters
+    // const [fromMonth, setFromMonth] = useState<string>('2026-01');
+    // const [toMonth, setToMonth] = useState<string>('2026-10');
+
+    const { fromMonth, legislaturaId, toMonth } = useDashboardFilters();
+    const { setFromMonth, setLegislaturaId, setToMonth } = useDashboardFiltersActions();
+    const { data: legislaturas = [], isLoading: isLoadingLegislaturas } = useLegislaturas();
 
     return (
         <div>
@@ -40,13 +46,13 @@ export const DashboardView = () => {
                         </label>
                         <select
                             id="select-legislatura"
-                            value={selectedLegislaturaId}
-                            onChange={(e) => setSelectedLegislaturaId(Number(e.target.value))}
+                            value={legislaturaId}
+                            onChange={(e) => setLegislaturaId(Number(e.target.value))}
                             className="px-2.5 py-1.5 rounded border border-border bg-surface text-text font-medium focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
                         >
-                            {legislaturas.map((leg) => (
-                                <option key={leg.id} value={leg.id}>
-                                    {leg.numero}ª Legislatura ({leg.anoInicio} - {leg.anoFim}) {leg.isAtual ? '(Atual)' : ''}
+                            {legislaturas.map((legislatura) => (
+                                <option key={legislatura.id} value={legislatura.id}>
+                                    {legislatura.id}ª Legislatura ({legislatura.dataInicio} - {legislatura.dataFim})
                                 </option>
                             ))}
                         </select>
@@ -81,7 +87,7 @@ export const DashboardView = () => {
             </div>
 
             {/* Audit & Update Banner */}
-            {metrics && (
+            {/* {metrics && (
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-border-subtle bg-[var(--color-surface>
                 -subtle)] text-xs text-text-muted">
                     <div className="flex items-center gap-2">
@@ -97,7 +103,7 @@ export const DashboardView = () => {
                         {metrics.legislaturaAtual.numero}ª Legislatura: {formatDate(metrics.legislaturaAtual.dataInicio)} até {formatDate(metrics.legislaturaAtual.dataFim)}
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     )
 }

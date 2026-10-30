@@ -1,9 +1,12 @@
+import { DashboardFiltersProvider } from "./contexts/dashboard-filters.context";
 import { DashboardView } from "./features/dashboard/DashboardView";
 
 export default function Home() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <DashboardView />
-    </div>
+    <DashboardFiltersProvider>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <DashboardView />
+      </div>
+    </DashboardFiltersProvider>
   );
 }
