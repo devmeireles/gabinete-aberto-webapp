@@ -2,6 +2,8 @@
  * Formatters according to Brazilian locale standards (pt-BR)
  */
 
+import { Gabinete } from "@/server/schemas/deputado-detalhe.schema";
+
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
@@ -169,4 +171,69 @@ export function formatCnpjOrCpf(doc: string | null | undefined): string {
     return clean.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "***.$2.$3-**");
   }
   return doc;
+}
+
+export const toRoman = (value: string | null): string => {
+  if (!value) return "";
+
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1 || number > 3999) return value;
+
+  const roman = [
+    ["M", 1000],
+    ["CM", 900],
+    ["D", 500],
+    ["CD", 400],
+    ["C", 100],
+    ["XC", 90],
+    ["L", 50],
+    ["XL", 40],
+    ["X", 10],
+    ["IX", 9],
+    ["V", 5],
+    ["IV", 4],
+    ["I", 1],
+  ] as const;
+
+  let remaining = Number(value);
+  let result = "";
+
+  for (const [symbol, amount] of roman) {
+    while (remaining >= amount) {
+      result += symbol;
+      remaining -= amount;
+    }
+  }
+
+  return result;
+};
+
+export const formatGabineteAddressLine = (gabinete: Gabinete): string => {
+  return [
+    gabinete.predio ? `Anexo ${toRoman(gabinete.predio)}` : null,
+    gabinete.sala ? `Sala ${gabinete.sala}` : null,
+    gabinete.telefone ? `Tel: ${gabinete.telefone}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+};
+
+export function formatBirthDate(dateString: string | null | undefined): string {
+  if (!dateString) return "Não informado";
+
+  const date = new Date(`${dateString.slice(0, 10)}T00:00:00`);
+
+  if (isNaN(date.getTime())) return "Não informado";
+
+  const today = new Date();
+  let age = today.getFullYear() - date.getFullYear();
+
+  if (
+    today.getMonth() < date.getMonth() ||
+    (today.getMonth() === date.getMonth() && today.getDate() < date.getDate())
+  ) {
+    age--;
+  }
+
+  return `${formatDate(dateString)} (${age} anos)`;
 }

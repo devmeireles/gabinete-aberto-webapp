@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
@@ -14,6 +14,24 @@ export type NavTab =
   | "/sobre";
 
 export const Header = () => {
+  return (
+    <Suspense fallback={<HeaderFallback />}>
+      <HeaderContent />
+    </Suspense>
+  );
+};
+
+const HeaderFallback = () => (
+  <header className="sticky top-0 z-30 bg-surface border-b border-border">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <span className="font-bold text-base sm:text-lg text-text">
+        Gabinete Aberto
+      </span>
+    </div>
+  </header>
+);
+
+const HeaderContent = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const pathname = usePathname();
@@ -63,8 +81,8 @@ export const Header = () => {
                 onClick={() => handleNavClick(item.id)}
                 aria-current={active ? "page" : undefined}
                 className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 text-xs uppercase tracking-wider font-semibold ${active
-                    ? "border-primary text-primary"
-                    : "border-transparent text-text-muted hover:text-text"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-muted hover:text-text"
                   }`}
               >
                 {item.label}
@@ -120,8 +138,8 @@ export const Header = () => {
                 onClick={() => handleNavClick(item.id)}
                 aria-current={active ? "page" : undefined}
                 className={`w-full text-left px-3 py-2.5 rounded text-sm font-medium transition-colors ${active
-                    ? "bg-primary-soft text-primary font-semibold"
-                    : "text-text-muted hover:bg-surface-hover hover:text-text"
+                  ? "bg-primary-soft text-primary font-semibold"
+                  : "text-text-muted hover:bg-surface-hover hover:text-text"
                   }`}
               >
                 {item.label}

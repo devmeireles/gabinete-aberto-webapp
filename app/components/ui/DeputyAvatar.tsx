@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { User } from 'lucide-react';
+import Image from 'next/image';
 
 interface DeputyAvatarProps {
-  urlFoto: string;
+  urlFoto: string | null;
   nome: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -16,8 +16,7 @@ export const DeputyAvatar: React.FC<DeputyAvatarProps> = ({
 }) => {
   const [hasError, setHasError] = useState(false);
 
-  // Compute initials (e.g. "Erika Hilton" -> "EH")
-  const parts = nome.trim().split(/\s+/);
+  const parts = nome.trim().split(/\s+/).filter(Boolean);
   const initials = parts.length > 1
     ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
     : (parts[0]?.slice(0, 2) || 'DP').toUpperCase();
@@ -28,11 +27,14 @@ export const DeputyAvatar: React.FC<DeputyAvatarProps> = ({
     lg: 'w-28 h-36 sm:w-32 sm:h-40 text-lg',
   }[size];
 
-  if (hasError) {
+  const containerClasses = `${sizeClasses} rounded overflow-hidden border border-border bg-primary-soft shrink-0 ${className}`;
+
+  if (!urlFoto || hasError) {
     return (
       <div
-        className={`${sizeClasses} rounded overflow-hidden border border-border bg-primary-soft text-primary font-semibold flex flex-col items-center justify-center shrink-0 select-none ${className}`}
+        className={`${containerClasses} text-primary font-semibold flex items-center justify-center select-none`}
         title={nome}
+        aria-label={`Sem fotografia para ${nome}`}
       >
         <span className="font-mono tracking-wider">{initials}</span>
       </div>
@@ -40,15 +42,20 @@ export const DeputyAvatar: React.FC<DeputyAvatarProps> = ({
   }
 
   return (
-    <div
-      className={`${sizeClasses} rounded overflow-hidden border border-border-subtle bg-surface-subtle shrink-0 relative ${className}`}
-    >
-      <img
+    <div className={`${containerClasses} relative`}>
+      <Image
         src={urlFoto}
         alt={`Fotografia oficial de ${nome}`}
+        fill
+        sizes={
+          size === 'sm' ? '32px' :
+            size === 'md' ? '56px' :
+              '(max-width: 640px) 112px, 128px'
+        }
         referrerPolicy="no-referrer"
         onError={() => setHasError(true)}
-        className="w-full h-full object-cover"
+        className="object-cover"
+        loading="eager"
       />
     </div>
   );
