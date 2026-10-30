@@ -2,10 +2,14 @@ import "server-only";
 
 import { initTRPC } from "@trpc/server";
 
-import { deputadoService, legislaturaService } from "@/server/services";
+import {
+  deputadoService,
+  despesaService,
+  legislaturaService,
+} from "@/server/services";
 
 export function createContext() {
-  return { legislaturaService, deputadoService };
+  return { legislaturaService, deputadoService, despesaService };
 }
 export type Context = Awaited<ReturnType<typeof createContext>>;
 

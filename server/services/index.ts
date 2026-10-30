@@ -6,6 +6,8 @@ import { createDeputadoRepository } from "@/server/repositories/deputado.reposit
 
 import { createLegislaturaService } from "./legislatura.service";
 import { createDeputadoService } from "./deputado.service";
+import { createDespesaRepository } from "../repositories/despesa.repository";
+import { createDespesaService } from "./despesa.service";
 
 export const legislaturaService = createLegislaturaService(
   createLegislaturaRepository(db),
@@ -14,3 +16,5 @@ export const legislaturaService = createLegislaturaService(
 export const deputadoService = createDeputadoService(
   createDeputadoRepository(db),
 );
+
+export const despesaService = createDespesaService(createDespesaRepository(db));
