@@ -1,6 +1,18 @@
-import { z } from "zod"
+import { z } from "zod";
 
-const monthSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Formato esperado: AAAA-MM")
+const monthSchema = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Formato esperado: AAAA-MM");
+
+export const DESPESA_ORDENAR_POR = [
+  "dataDocumento",
+  "deputadoNome",
+  "tipoDespesa",
+  "fornecedorNome",
+  "valorDocumento",
+  "valorGlosa",
+  "valorLiquido",
+] as const;
 
 export const despesaListInputSchema = z.object({
   legislaturaId: z.number().int().positive(),
@@ -9,11 +21,11 @@ export const despesaListInputSchema = z.object({
   fromMonth: monthSchema.optional(),
   toMonth: monthSchema.optional(),
   fornecedor: z.string().trim().min(2).max(100).optional(),
-  ordenarPor: z.enum(["dataDocumento", "valorLiquido", "valorDocumento"]).default("dataDocumento"),
+  ordenarPor: z.enum(DESPESA_ORDENAR_POR).default("dataDocumento"),
   ordem: z.enum(["asc", "desc"]).default("desc"),
   pagina: z.number().int().min(1).default(1),
   itens: z.number().int().min(1).max(100).default(20),
-})
+});
 
 export const despesaItemSchema = z.object({
   id: z.string(), // bigint do banco serializado como string
@@ -30,23 +42,29 @@ export const despesaItemSchema = z.object({
   valorGlosa: z.number(),
   valorLiquido: z.number(),
   urlDocumento: z.string().nullable(),
-})
+  siglaPartido: z.string().nullable(),
+  siglaUf: z.string().nullable(),
+});
 
 export const despesaListResultSchema = z.object({
   items: z.array(despesaItemSchema),
   total: z.number().int(),
   totalLiquido: z.number(),
+  totalBruto: z.number(),
+  totalGlosa: z.number(),
   pagina: z.number().int(),
   itens: z.number().int(),
   totalPaginas: z.number().int(),
-})
+});
 
 export const tipoDespesaSchema = z.object({
   id: z.number().int(),
   nome: z.string(),
-})
+});
 
-export type DespesaListInput = z.infer<typeof despesaListInputSchema>
-export type DespesaItem = z.infer<typeof despesaItemSchema>
-export type DespesaListResult = z.infer<typeof despesaListResultSchema>
-export type TipoDespesa = z.infer<typeof tipoDespesaSchema>
+export type DespesaListInput = z.infer<typeof despesaListInputSchema>;
+export type DespesaItem = z.infer<typeof despesaItemSchema>;
+export type DespesaListResult = z.infer<typeof despesaListResultSchema>;
+export type TipoDespesa = z.infer<typeof tipoDespesaSchema>;
+
+export type DespesaOrdenarPor = (typeof DESPESA_ORDENAR_POR)[number];

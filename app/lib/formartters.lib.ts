@@ -4,6 +4,12 @@
 
 import { Gabinete } from "@/server/schemas/deputado-detalhe.schema";
 
+const integerFormat: Intl.NumberFormat = new Intl.NumberFormat("pt-BR");
+const percentFormat: Intl.NumberFormat = new Intl.NumberFormat("pt-BR", {
+  style: "percent",
+  maximumFractionDigits: 1,
+});
+
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",

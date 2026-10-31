@@ -9,6 +9,8 @@ import {
     type ReactNode,
 } from "react";
 
+import type { DespesaOrdenarPor } from "@/server/schemas/despesa.schema";
+
 export interface IDespesasFilters {
     legislaturaId: number;
     deputadoId: number | undefined;
@@ -16,7 +18,7 @@ export interface IDespesasFilters {
     fromMonth: string; // "" = sem limite
     toMonth: string;
     fornecedor: string;
-    ordenarPor: "dataDocumento" | "valorLiquido" | "valorDocumento";
+    ordenarPor: DespesaOrdenarPor;
     ordem: "asc" | "desc";
     pagina: number;
     itens: number;
@@ -26,6 +28,7 @@ type DespesasFilterKey = Exclude<keyof IDespesasFilters, "pagina">;
 
 export interface IDespesasFiltersActions {
     setFilter: <K extends DespesasFilterKey>(key: K, value: IDespesasFilters[K]) => void;
+    setSort: (ordenarPor: DespesaOrdenarPor, ordem: "asc" | "desc") => void;
     setPagina: (pagina: number) => void;
     reset: () => void;
 }
@@ -84,9 +87,13 @@ export function DespesasFiltersProvider({ children, initialFilters }: IDespesasF
         setFilters(initial);
     }, [initial]);
 
+    const setSort = useCallback((ordenarPor: DespesaOrdenarPor, ordem: "asc" | "desc"): void => {
+        setFilters((prev: IDespesasFilters) => ({ ...prev, ordenarPor, ordem, pagina: 1 }));
+    }, []);
+
     const actions: IDespesasFiltersActions = useMemo(
-        () => ({ setFilter, setPagina, reset }),
-        [setFilter, setPagina, reset],
+        () => ({ setFilter, setSort, setPagina, reset }),
+        [setFilter, setSort, setPagina, reset],
     );
 
     return (

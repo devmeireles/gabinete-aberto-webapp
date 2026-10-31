@@ -5,6 +5,7 @@ import { useDeputadoDetalhe } from "@/app/hooks/use-deputado-detalhe"
 import { formatBirthDate, formatDate, formatGabineteAddressLine, safeText } from "@/app/lib/formartters.lib"
 import { ArrowLeft, ArrowLeftRight, Building, Calendar, Check, ChevronRight, Download, ExternalLink, GraduationCap, Mail, MapPin, Share2, ShieldCheck } from "lucide-react"
 import { useState } from "react"
+import { DeputadoDespesas } from "./DeputadoDespesas"
 
 interface IDeputadoDetailViewProps {
     id: number
@@ -245,6 +246,12 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
                     ) : null}
                 </div>
             </section>
+
+            <DeputadoDespesas
+                key={data.perfil.id}
+                deputadoId={data.perfil.id}
+                legislaturaIds={data.legislaturas.map((l) => l.legislaturaId)}
+            />
         </div>
     )
 }
