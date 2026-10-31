@@ -11,9 +11,19 @@ import {
 
 export interface IDeputadosFilters {
     nome: string;
+    legislaturaId: number | undefined;
     siglaUf: string;
     siglaPartido: string;
     siglaSexo: "" | "M" | "F";
+    situacao: string;
+    condicaoEleitoral: string;
+    escolaridade: string;
+    ufNascimento: string;
+    municipioNascimento: string;
+    anoNascimentoDe: string;
+    anoNascimentoAte: string;
+    ordenarPor: "nome" | "siglaPartido" | "siglaUf" | "dataNascimento";
+    ordem: "asc" | "desc";
     pagina: number;
     itens: number;
 }
@@ -28,9 +38,19 @@ export interface IDeputadosFiltersActions {
 
 const INITIAL_FILTERS: IDeputadosFilters = {
     nome: "",
+    legislaturaId: undefined,
     siglaUf: "",
     siglaPartido: "",
     siglaSexo: "",
+    situacao: "",
+    condicaoEleitoral: "",
+    escolaridade: "",
+    ufNascimento: "",
+    municipioNascimento: "",
+    anoNascimentoDe: "",
+    anoNascimentoAte: "",
+    ordenarPor: "nome",
+    ordem: "asc",
     pagina: 1,
     itens: 20,
 };
@@ -56,11 +76,14 @@ export function useDeputadosFiltersActions(): IDeputadosFiltersActions {
 
 interface IDeputadosFiltersProviderProps {
     children: ReactNode;
+    initialFilters?: Partial<IDeputadosFilters>;
 }
 
-export function DeputadosFiltersProvider({ children }: IDeputadosFiltersProviderProps) {
-    const [filters, setFilters] = useState<IDeputadosFilters>(INITIAL_FILTERS);
+export function DeputadosFiltersProvider({ children, initialFilters }: IDeputadosFiltersProviderProps) {
+    const [initial] = useState<IDeputadosFilters>(() => ({ ...INITIAL_FILTERS, ...initialFilters }));
+    const [filters, setFilters] = useState<IDeputadosFilters>(initial);
 
+    // Trocar qualquer filtro volta para a página 1, no mesmo update.
     const setFilter = useCallback<IDeputadosFiltersActions["setFilter"]>((key, value) => {
         setFilters((prev: IDeputadosFilters) => ({ ...prev, [key]: value, pagina: 1 }));
     }, []);
@@ -70,8 +93,8 @@ export function DeputadosFiltersProvider({ children }: IDeputadosFiltersProvider
     }, []);
 
     const reset = useCallback((): void => {
-        setFilters(INITIAL_FILTERS);
-    }, []);
+        setFilters(initial);
+    }, [initial]);
 
     const actions: IDeputadosFiltersActions = useMemo(
         () => ({ setFilter, setPagina, reset }),

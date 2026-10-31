@@ -1,6 +1,10 @@
 import "server-only";
 
-import type { Deputado } from "@/server/schemas/deputado.schema";
+import {
+  DeputadoFiltroOpcoes,
+  deputadoListInputSchema,
+  DeputadoListResult,
+} from "@/server/schemas/deputado.schema";
 
 import { baseProcedure, createTRPCRouter } from "../init";
 import { DeputadoDetalhe } from "@/server/schemas/deputado-detalhe.schema";
@@ -8,9 +12,11 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deputadoRouter = createTRPCRouter({
-  list: baseProcedure.query(({ ctx }): Promise<Deputado[]> => {
-    return ctx.deputadoService.list();
-  }),
+  list: baseProcedure
+    .input(deputadoListInputSchema)
+    .query(({ ctx, input }): Promise<DeputadoListResult> => {
+      return ctx.deputadoService.list(input);
+    }),
   detail: baseProcedure
     .input(z.object({ id: z.number().int().positive() }))
     .query(async ({ ctx, input }): Promise<DeputadoDetalhe> => {
@@ -27,4 +33,8 @@ export const deputadoRouter = createTRPCRouter({
 
       return detalhe;
     }),
+  opcoesFiltro: baseProcedure.query(
+    ({ ctx }): Promise<DeputadoFiltroOpcoes> =>
+      ctx.deputadoService.opcoesFiltro(),
+  ),
 });
