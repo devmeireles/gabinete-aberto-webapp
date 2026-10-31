@@ -6,18 +6,18 @@ references. `eslint.config.mjs` does not enforce token usage.
 
 ## Token inventory
 
-| Purpose | Variables | Existing utility examples |
-| --- | --- | --- |
-| Primary | `--color-primary`, `--color-primary-hover`, `--color-primary-soft` | `text-primary`, `bg-primary-soft` |
-| Accent | `--color-accent`, `--color-accent-hover` | `text-accent` |
-| Surfaces | `--color-background`, `--color-surface`, `--color-surface-subtle`, `--color-surface-hover` | `bg-surface`, `bg-surface-subtle`, `hover:bg-surface-hover` |
-| Borders | `--color-border`, `--color-border-subtle` | `border-border`, `divide-border-subtle` |
-| Text | `--color-text`, `--color-text-muted`, `--color-text-subtle` | `text-text`, `text-text-muted` |
-| Links | `--color-link`, `--color-link-hover` | `text-link`, `hover:text-link-hover` |
-| Feedback | `--color-success`, `--color-warning`, `--color-danger`, `--color-info`, plus each `-soft` | `text-warning`, `bg-danger-soft` |
-| Focus/overlay | `--color-focus-ring`, `--color-overlay` | `focus-visible:ring-focus-ring`, `bg-overlay` |
-| Charts | `--chart-1` … `--chart-6` | CSS variables only; no `--color-chart-*` mapping |
-| Calendar appearance | `--calendar-invert` | Non-color variable available for control styling |
+| Purpose             | Variables                                                                                  | Existing utility examples                                   |
+| ------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| Primary             | `--color-primary`, `--color-primary-hover`, `--color-primary-soft`                         | `text-primary`, `bg-primary-soft`                           |
+| Accent              | `--color-accent`, `--color-accent-hover`                                                   | `text-accent`                                               |
+| Surfaces            | `--color-background`, `--color-surface`, `--color-surface-subtle`, `--color-surface-hover` | `bg-surface`, `bg-surface-subtle`, `hover:bg-surface-hover` |
+| Borders             | `--color-border`, `--color-border-subtle`                                                  | `border-border`, `divide-border-subtle`                     |
+| Text                | `--color-text`, `--color-text-muted`, `--color-text-subtle`                                | `text-text`, `text-text-muted`                              |
+| Links               | `--color-link`, `--color-link-hover`                                                       | `text-link`, `hover:text-link-hover`                        |
+| Feedback            | `--color-success`, `--color-warning`, `--color-danger`, `--color-info`, plus each `-soft`  | `text-warning`, `bg-danger-soft`                            |
+| Focus/overlay       | `--color-focus-ring`, `--color-overlay`                                                    | `focus-visible:ring-focus-ring`, `bg-overlay`               |
+| Charts              | `--chart-1` … `--chart-6`                                                                  | CSS variables only; no `--color-chart-*` mapping            |
+| Calendar appearance | `--calendar-invert`                                                                        | Non-color variable available for control styling            |
 
 `@theme` in the token file maps the `--color-*` palette and declares Plus Jakarta
 Sans / JetBrains Mono font stacks. There is no custom radius token scale,

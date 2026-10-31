@@ -1,115 +1,65 @@
 :root {
-    color-scheme: light;
+  color-scheme: light;
 
-    /* Brand and primary actions */
-    --color-primary: #155e63;
-    --color-primary-hover: #10494d;
-    --color-primary-soft: #e7f2f1;
-    --color-accent: #d29a35;
-    --color-accent-hover: #b88328;
+  /* Brand and primary actions */
+  --color-primary: #155e63;
+  --color-primary-hover: #10494d;
+  --color-primary-soft: #e7f2f1;
+  --color-accent: #d29a35;
+  --color-accent-hover: #b88328;
 
-    /* Surfaces and layout */
-    --color-background: #f5f7f6;
-    --color-surface: #ffffff;
-    --color-surface-subtle: #edf1ef;
-    --color-surface-hover: #f1f5f3;
-    --color-border: #d8e0dc;
-    --color-border-subtle: #e4ebe7;
+  /* Surfaces and layout */
+  --color-background: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #edf1ef;
+  --color-surface-hover: #f1f5f3;
+  --color-border: #d8e0dc;
+  --color-border-subtle: #e4ebe7;
 
-    /* Typography */
-    --color-text: #172321;
-    --color-text-muted: #566460;
-    --color-text-subtle: #798783;
-    --color-link: #125f77;
-    --color-link-hover: #0d4658;
+  /* Typography */
+  --color-text: #172321;
+  --color-text-muted: #566460;
+  --color-text-subtle: #798783;
+  --color-link: #125f77;
+  --color-link-hover: #0d4658;
 
-    /* Feedback and semantics */
-    --color-success: #24734b;
-    --color-success-soft: #eaf5ef;
-    --color-warning: #94620b;
-    --color-warning-soft: #fcf6e8;
-    --color-danger: #a53d3d;
-    --color-danger-soft: #faecec;
-    --color-info: #286582;
-    --color-info-soft: #edf4f7;
+  /* Feedback and semantics */
+  --color-success: #24734b;
+  --color-success-soft: #eaf5ef;
+  --color-warning: #94620b;
+  --color-warning-soft: #fcf6e8;
+  --color-danger: #a53d3d;
+  --color-danger-soft: #faecec;
+  --color-info: #286582;
+  --color-info-soft: #edf4f7;
 
-    /* Focus and overlay */
-    --color-focus-ring: #126b74;
-    --color-overlay: rgb(16 34 31 / 48%);
-    --calendar-invert: 0;
+  /* Focus and overlay */
+  --color-focus-ring: #126b74;
+  --color-overlay: rgb(16 34 31 / 48%);
+  --calendar-invert: 0;
 
-    /* Chart palette */
-    --chart-1: #155e63;
-    --chart-2: #d29a35;
-    --chart-3: #286582;
-    --chart-4: #24734b;
-    --chart-5: #6d4c7d;
-    --chart-6: #94620b;
+  /* Chart palette */
+  --chart-1: #155e63;
+  --chart-2: #d29a35;
+  --chart-3: #286582;
+  --chart-4: #24734b;
+  --chart-5: #6d4c7d;
+  --chart-6: #94620b;
 }
 
 /* Automatic dark mode via OS preference when data-theme is not explicitly forced */
 @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        color-scheme: dark;
-
-        /* Brand and primary actions (adjusted for optical contrast on dark canvas) */
-        --color-primary: #2ca19b;
-        --color-primary-hover: #37b7b1;
-        --color-primary-soft: #122e2b;
-        --color-accent: #e4af4d;
-        --color-accent-hover: #f3be59;
-
-        /* Surfaces and layout (<5% saturation cool neutral dark) */
-        --color-background: #0d1514;
-        --color-surface: #141f1e;
-        --color-surface-subtle: #192725;
-        --color-surface-hover: #1f302e;
-        --color-border: #263c39;
-        --color-border-subtle: #1d2e2b;
-
-        /* Typography (WCAG AA compliant high contrast) */
-        --color-text: #e6eeec;
-        --color-text-muted: #9db2ad;
-        --color-text-subtle: #758c87;
-        --color-link: #48a5c2;
-        --color-link-hover: #6bc2de;
-
-        /* Feedback and semantics */
-        --color-success: #349b67;
-        --color-success-soft: #143023;
-        --color-warning: #c2881b;
-        --color-warning-soft: #33240b;
-        --color-danger: #cf5656;
-        --color-danger-soft: #381b1b;
-        --color-info: #3882a6;
-        --color-info-soft: #142a36;
-
-        /* Focus and overlay */
-        --color-focus-ring: #2ca19b;
-        --color-overlay: rgb(0 0 0 / 70%);
-        --calendar-invert: 0.85;
-
-        /* Chart palette */
-        --chart-1: #2ca19b;
-        --chart-2: #e4af4d;
-        --chart-3: #48a5c2;
-        --chart-4: #349b67;
-        --chart-5: #9f75b3;
-        --chart-6: #c2881b;
-    }
-}
-
-/* Explicit dark theme via [data-theme="dark"] or class .dark */
-:root[data-theme="dark"],
-.dark {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
 
+    /* Brand and primary actions (adjusted for optical contrast on dark canvas) */
     --color-primary: #2ca19b;
     --color-primary-hover: #37b7b1;
     --color-primary-soft: #122e2b;
     --color-accent: #e4af4d;
     --color-accent-hover: #f3be59;
 
+    /* Surfaces and layout (<5% saturation cool neutral dark) */
     --color-background: #0d1514;
     --color-surface: #141f1e;
     --color-surface-subtle: #192725;
@@ -117,12 +67,14 @@
     --color-border: #263c39;
     --color-border-subtle: #1d2e2b;
 
+    /* Typography (WCAG AA compliant high contrast) */
     --color-text: #e6eeec;
     --color-text-muted: #9db2ad;
     --color-text-subtle: #758c87;
     --color-link: #48a5c2;
     --color-link-hover: #6bc2de;
 
+    /* Feedback and semantics */
     --color-success: #349b67;
     --color-success-soft: #143023;
     --color-warning: #c2881b;
@@ -132,50 +84,102 @@
     --color-info: #3882a6;
     --color-info-soft: #142a36;
 
+    /* Focus and overlay */
     --color-focus-ring: #2ca19b;
     --color-overlay: rgb(0 0 0 / 70%);
     --calendar-invert: 0.85;
 
+    /* Chart palette */
     --chart-1: #2ca19b;
     --chart-2: #e4af4d;
     --chart-3: #48a5c2;
     --chart-4: #349b67;
     --chart-5: #9f75b3;
     --chart-6: #c2881b;
+  }
+}
+
+/* Explicit dark theme via [data-theme="dark"] or class .dark */
+:root[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  --color-primary: #2ca19b;
+  --color-primary-hover: #37b7b1;
+  --color-primary-soft: #122e2b;
+  --color-accent: #e4af4d;
+  --color-accent-hover: #f3be59;
+
+  --color-background: #0d1514;
+  --color-surface: #141f1e;
+  --color-surface-subtle: #192725;
+  --color-surface-hover: #1f302e;
+  --color-border: #263c39;
+  --color-border-subtle: #1d2e2b;
+
+  --color-text: #e6eeec;
+  --color-text-muted: #9db2ad;
+  --color-text-subtle: #758c87;
+  --color-link: #48a5c2;
+  --color-link-hover: #6bc2de;
+
+  --color-success: #349b67;
+  --color-success-soft: #143023;
+  --color-warning: #c2881b;
+  --color-warning-soft: #33240b;
+  --color-danger: #cf5656;
+  --color-danger-soft: #381b1b;
+  --color-info: #3882a6;
+  --color-info-soft: #142a36;
+
+  --color-focus-ring: #2ca19b;
+  --color-overlay: rgb(0 0 0 / 70%);
+  --calendar-invert: 0.85;
+
+  --chart-1: #2ca19b;
+  --chart-2: #e4af4d;
+  --chart-3: #48a5c2;
+  --chart-4: #349b67;
+  --chart-5: #9f75b3;
+  --chart-6: #c2881b;
 }
 
 @theme {
-    --color-primary: var(--color-primary);
-    --color-primary-hover: var(--color-primary-hover);
-    --color-primary-soft: var(--color-primary-soft);
-    --color-accent: var(--color-accent);
-    --color-accent-hover: var(--color-accent-hover);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
 
-    --color-background: var(--color-background);
-    --color-surface: var(--color-surface);
-    --color-surface-subtle: var(--color-surface-subtle);
-    --color-surface-hover: var(--color-surface-hover);
-    --color-border: var(--color-border);
-    --color-border-subtle: var(--color-border-subtle);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-surface-subtle: var(--color-surface-subtle);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
 
-    --color-text: var(--color-text);
-    --color-text-muted: var(--color-text-muted);
-    --color-text-subtle: var(--color-text-subtle);
-    --color-link: var(--color-link);
-    --color-link-hover: var(--color-link-hover);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-subtle: var(--color-text-subtle);
+  --color-link: var(--color-link);
+  --color-link-hover: var(--color-link-hover);
 
-    --color-success: var(--color-success);
-    --color-success-soft: var(--color-success-soft);
-    --color-warning: var(--color-warning);
-    --color-warning-soft: var(--color-warning-soft);
-    --color-danger: var(--color-danger);
-    --color-danger-soft: var(--color-danger-soft);
-    --color-info: var(--color-info);
-    --color-info-soft: var(--color-info-soft);
+  --color-success: var(--color-success);
+  --color-success-soft: var(--color-success-soft);
+  --color-warning: var(--color-warning);
+  --color-warning-soft: var(--color-warning-soft);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-info: var(--color-info);
+  --color-info-soft: var(--color-info-soft);
 
-    --color-focus-ring: var(--color-focus-ring);
-    --color-overlay: var(--color-overlay);
+  --color-focus-ring: var(--color-focus-ring);
+  --color-overlay: var(--color-overlay);
 
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans:
+    "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
 }

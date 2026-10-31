@@ -33,8 +33,7 @@ export const deputadoRouter = createTRPCRouter({
 
       return detalhe;
     }),
-  opcoesFiltro: baseProcedure.query(
-    ({ ctx }): Promise<DeputadoFiltroOpcoes> =>
-      ctx.deputadoService.opcoesFiltro(),
+  opcoesFiltro: baseProcedure.query(({ ctx }): Promise<DeputadoFiltroOpcoes> =>
+    ctx.deputadoService.opcoesFiltro(),
   ),
 });

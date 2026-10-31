@@ -6,19 +6,19 @@ no separate fixture/adapter layer or Prisma client.
 
 ## Implementation map
 
-| Concern | Source |
-| --- | --- |
-| HTTP transport | `app/api/trpc/[trpc]/route.ts`, using `fetchRequestHandler` |
-| Router composition | `server/trpc/routers/_app.ts` |
-| Context and procedure base | `server/trpc/init.ts`: `createContext`, `baseProcedure` |
-| Dependency construction | `server/services/index.ts` |
-| Domain contracts | `server/schemas/*.schema.ts` |
-| Database operations | `server/repositories/*.repository.ts` |
-| Database connection | `server/db/client.ts`, Neon HTTP driver |
-| Database tables | `drizzle/schema.ts` (relations in `drizzle/relations.ts`) |
-| Client provider | `app/lib/trpc/client.tsx` |
-| Cache defaults | `app/lib/trpc/query-client.ts` |
-| Feature queries | `app/hooks/use-*.ts` |
+| Concern                    | Source                                                      |
+| -------------------------- | ----------------------------------------------------------- |
+| HTTP transport             | `app/api/trpc/[trpc]/route.ts`, using `fetchRequestHandler` |
+| Router composition         | `server/trpc/routers/_app.ts`                               |
+| Context and procedure base | `server/trpc/init.ts`: `createContext`, `baseProcedure`     |
+| Dependency construction    | `server/services/index.ts`                                  |
+| Domain contracts           | `server/schemas/*.schema.ts`                                |
+| Database operations        | `server/repositories/*.repository.ts`                       |
+| Database connection        | `server/db/client.ts`, Neon HTTP driver                     |
+| Database tables            | `drizzle/schema.ts` (relations in `drizzle/relations.ts`)   |
+| Client provider            | `app/lib/trpc/client.tsx`                                   |
+| Cache defaults             | `app/lib/trpc/query-client.ts`                              |
+| Feature queries            | `app/hooks/use-*.ts`                                        |
 
 ## Procedures
 

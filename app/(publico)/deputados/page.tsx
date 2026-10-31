@@ -4,7 +4,7 @@ import { DeputadosView } from "@/app/features/deputados/DeputadosView";
 export default function DeputadosPage() {
   return (
     <DeputadosFiltersProvider>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
         <DeputadosView />
       </div>
     </DeputadosFiltersProvider>

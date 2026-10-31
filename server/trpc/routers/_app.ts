@@ -8,7 +8,7 @@ import { despesaRouter } from "./despesa.router";
 export const appRouter = createTRPCRouter({
   legislatura: legislaturaRouter,
   deputado: deputadoRouter,
-  despesa: despesaRouter
+  despesa: despesaRouter,
 });
 
 export type AppRouter = typeof appRouter;

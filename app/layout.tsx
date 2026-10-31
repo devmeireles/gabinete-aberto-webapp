@@ -21,15 +21,14 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
         <TRPCReactProvider>
-          <div className="min-h-screen flex flex-col bg-(--color-background) text-text">
+          <div className="flex min-h-screen flex-col bg-(--color-background) text-text">
             <Header />
             <main id="main-content" className="flex-1">
               {children}

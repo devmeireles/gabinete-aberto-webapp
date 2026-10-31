@@ -6,12 +6,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 export type NavTab =
-  | "/"
-  | "/deputados"
-  | "/despesas"
-  | "/partidos"
-  | "/comparar"
-  | "/sobre";
+  "/" | "/deputados" | "/despesas" | "/partidos" | "/comparar" | "/sobre";
 
 export const Header = () => {
   return (
@@ -22,9 +17,9 @@ export const Header = () => {
 };
 
 const HeaderFallback = () => (
-  <header className="sticky top-0 z-30 bg-surface border-b border-border">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <span className="font-bold text-base sm:text-lg text-text">
+  <header className="sticky top-0 z-30 border-b border-border bg-surface">
+    <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <span className="text-base font-bold text-text sm:text-lg">
         Gabinete Aberto
       </span>
     </div>
@@ -54,14 +49,13 @@ const HeaderContent = () => {
   const isActive = (path: NavTab) => pathname === path;
 
   return (
-    <header className="sticky top-0 z-30 bg-surface border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
-
+    <header className="sticky top-0 z-30 border-b border-border bg-surface">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-8 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <span
           onClick={() => handleNavClick("/")}
           aria-label="Ir para a página inicial"
-          className="text-left font-bold text-base sm:text-lg tracking-tight text-text whitespace-nowrap shrink-0 hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+          className="shrink-0 rounded text-left text-base font-bold tracking-tight whitespace-nowrap text-text transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring sm:text-lg"
         >
           Gabinete Aberto
         </span>
@@ -69,7 +63,7 @@ const HeaderContent = () => {
         {/* Desktop navigation */}
         <nav
           aria-label="Navegação principal"
-          className="hidden md:flex items-center gap-6 text-sm font-medium"
+          className="hidden items-center gap-6 text-sm font-medium md:flex"
         >
           {navItems.map((item) => {
             const active = isActive(item.id);
@@ -80,10 +74,11 @@ const HeaderContent = () => {
                 type="button"
                 onClick={() => handleNavClick(item.id)}
                 aria-current={active ? "page" : undefined}
-                className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 text-xs uppercase tracking-wider font-semibold ${active
-                  ? "border-primary text-primary"
-                  : "border-transparent text-text-muted hover:text-text"
-                  }`}
+                className={`shrink-0 border-b-2 py-1 text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors ${
+                  active
+                    ? "border-primary text-primary"
+                    : "border-transparent text-text-muted hover:text-text"
+                }`}
               >
                 {item.label}
               </button>
@@ -92,12 +87,12 @@ const HeaderContent = () => {
         </nav>
 
         {/* Theme toggle */}
-        <div className="hidden sm:flex items-center gap-2.5 shrink-0">
+        <div className="hidden shrink-0 items-center gap-2.5 sm:flex">
           <ThemeToggle />
         </div>
 
         {/* Mobile controls */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
 
           <button
@@ -110,12 +105,12 @@ const HeaderContent = () => {
             }
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
-            className="p-2 text-text-muted hover:text-text rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            className="rounded p-2 text-text-muted hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="h-5 w-5" />
             )}
           </button>
         </div>
@@ -126,7 +121,7 @@ const HeaderContent = () => {
         <nav
           id="mobile-navigation"
           aria-label="Navegação móvel"
-          className="md:hidden border-t border-border bg-surface px-4 py-3 space-y-1"
+          className="space-y-1 border-t border-border bg-surface px-4 py-3 md:hidden"
         >
           {navItems.map((item) => {
             const active = isActive(item.id);
@@ -137,10 +132,11 @@ const HeaderContent = () => {
                 type="button"
                 onClick={() => handleNavClick(item.id)}
                 aria-current={active ? "page" : undefined}
-                className={`w-full text-left px-3 py-2.5 rounded text-sm font-medium transition-colors ${active
-                  ? "bg-primary-soft text-primary font-semibold"
-                  : "text-text-muted hover:bg-surface-hover hover:text-text"
-                  }`}
+                className={`w-full rounded px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-primary-soft font-semibold text-primary"
+                    : "text-text-muted hover:bg-surface-hover hover:text-text"
+                }`}
               >
                 {item.label}
               </button>

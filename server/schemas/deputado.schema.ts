@@ -51,4 +51,4 @@ export const deputadoListResultSchema = z.object({
 export type DeputadoListInput = z.infer<typeof deputadoListInputSchema>;
 export type DeputadoListItem = z.infer<typeof deputadoListItemSchema>;
 export type DeputadoListResult = z.infer<typeof deputadoListResultSchema>;
-export type DeputadoFiltroOpcoes = z.infer<typeof deputadoFiltroOpcoesSchema>
+export type DeputadoFiltroOpcoes = z.infer<typeof deputadoFiltroOpcoesSchema>;
