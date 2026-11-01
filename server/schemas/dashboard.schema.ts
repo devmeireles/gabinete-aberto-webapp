@@ -1,21 +1,12 @@
 import { z } from "zod";
 
-const monthSchema = z
-  .string()
-  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Formato esperado: AAAA-MM");
-
-export const dashboardMetricsInputSchema = z
-  .object({
-    legislaturaId: z.number().int().positive(),
-    fromMonth: monthSchema,
-    toMonth: monthSchema.optional(),
-  })
-  .refine((input) => !input.toMonth || input.fromMonth <= input.toMonth, {
-    message: "O mês inicial deve ser anterior ou igual ao mês final.",
-    path: ["toMonth"],
-  });
+export const dashboardMetricsInputSchema = z.void();
 
 export const dashboardMetricsSchema = z.object({
+  periodo: z.object({
+    dataInicio: z.string(),
+    dataFim: z.string().nullable(),
+  }),
   totais: z.object({
     totalBruto: z.number(),
     totalGlosa: z.number(),

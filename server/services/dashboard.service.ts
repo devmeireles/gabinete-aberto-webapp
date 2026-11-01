@@ -1,21 +1,18 @@
 import "server-only";
 
 import type { IDashboardRepository } from "@/server/repositories/dashboard.repository";
-import type {
-  DashboardMetrics,
-  DashboardMetricsInput,
-} from "@/server/schemas/dashboard.schema";
+import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 export interface IDashboardService {
-  metrics(input: DashboardMetricsInput): Promise<DashboardMetrics>;
+  metrics(): Promise<DashboardMetrics>;
 }
 
 export function createDashboardService(
   repository: IDashboardRepository,
 ): IDashboardService {
   return {
-    metrics(input) {
-      return repository.metrics(input);
+    metrics() {
+      return repository.metrics();
     },
   };
 }

@@ -44,18 +44,18 @@ in server schemas, and client fetching in feature hooks.
 ## Dashboard metrics
 
 The dashboard uses dedicated grouped queries rather than loading paginated
-expense rows into the client. Monthly and category totals use the selected
-legislature and inclusive month range. Party totals use the party affiliation
-valid for the expense document date (or the first day of its competence when
-that date is unavailable); expenses without an identifiable affiliation are
-not included in the party breakdown. The per-member headline divides the net
-total by all deputies registered in the selected legislature.
+expense rows into the client. It resolves the single row marked
+`legislaturaAtual` server-side and scopes all totals to that legislature, without
+client-supplied legislature or month filters. Party totals use the party
+affiliation valid for the expense document date (or the first day of its
+competence when that date is unavailable); expenses without an identifiable
+affiliation are not included in the party breakdown. The per-member headline
+divides the net total by all deputies registered in the current legislature.
 
-The initial dashboard legislature is the row marked `legislaturaAtual` in the
-database. Its `dataInicio` and `dataFim` define the initial month inputs. If the
-current legislature has no end date, the upper-bound month remains blank and the
-query does not apply an upper bound. Changing legislature resets the month
-inputs to that row's dates.
+The response includes the current legislature's `dataInicio` and `dataFim` for
+the monthly chart. If no row is marked current, or multiple rows are marked
+current, the dashboard query fails explicitly rather than choosing an arbitrary
+legislature.
 
 ## Sources and environment
 

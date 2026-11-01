@@ -29,6 +29,10 @@ middleware:
 - `deputado.list`, `deputado.detail`, `deputado.opcoesFiltro`
 - `despesa.list`, `despesa.tipos`
 - `fornecedor.list`, `fornecedor.detail`
+- `dashboard.metrics`
+
+`dashboard.metrics` accepts no client filters. It resolves the current
+legislature on the server and returns its dates with the grouped metrics.
 
 POST transport support does not imply that mutation procedures exist.
 `deputado.detail` raises tRPC `NOT_FOUND` when the repository returns `null`.
@@ -62,11 +66,13 @@ use five minutes and `keepPreviousData`; text search is debounced by 400 ms, omi
 terms shorter than two characters, and pauses querying while typing. Deputy birth
 years are sent only after four digits. Detail uses one hour and disables retries;
 legislatures, filter options, and expense types use one-day stale and GC times.
+Dashboard metrics use seven-day stale and GC times.
 
 Supplier search is debounced by 400 ms and ignores terms shorter than two
 characters. Supplier detail uses the expense list with a fixed supplier ID and
 all legislatures selected initially; the legislature filter can narrow that view.
 
-Filter contexts contain UI state rather than fetched data. See
-[data-access rules](data-access-rules.md) for query invariants and
+Filter contexts contain UI state rather than fetched data. The dashboard has no
+filter context; its metrics query resolves the current legislature server-side.
+See [data-access rules](data-access-rules.md) for query invariants and
 [architecture](architecture.md) for state ownership.

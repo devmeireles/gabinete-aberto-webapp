@@ -36,11 +36,14 @@ See [design system rules](design-system-rules.md) before changing styles.
 
 ## Existing reuse patterns
 
-`DashboardView` composes its filter controls, hero, metric cards, charts, and
-party summary; chart and summary components receive prepared dashboard metrics
-as props. The monthly evolution chart uses Recharts' animated line chart.
-Dashboard query refreshes show a visible spinner while retaining the previous
-results.
+`DashboardView` composes the hero, metric cards, charts, and party summary;
+chart and summary components receive prepared dashboard metrics as props. The
+monthly evolution chart uses Recharts' animated line chart. Dashboard metrics
+are always scoped to the current legislature and refreshes show a visible
+spinner while retaining previous results.
+`CitizenEquivalenceSimulator` starts at the dashboard's total net amount for
+the selected period, bounds its range to that amount, and labels fixed
+economic comparison references explicitly.
 
 `FornecedorCard` is a fully clickable supplier summary with gross declared
 amount and the number of expense notes issued. Its service icon is selected by

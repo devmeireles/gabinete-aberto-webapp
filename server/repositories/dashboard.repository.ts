@@ -11,7 +11,6 @@ import {
   or,
   sql,
   sum,
-  type SQL,
 } from "drizzle-orm";
 
 import type { Database } from "@/server/db/client";
@@ -19,6 +18,7 @@ import {
   deputadoPartidoVigencias,
   deputadoLegislaturas,
   despesas,
+  legislaturas,
   partidoLegislaturas,
   partidos,
   tiposDespesa,
@@ -26,33 +26,34 @@ import {
 import {
   dashboardMetricsSchema,
   type DashboardMetrics,
-  type DashboardMetricsInput,
 } from "@/server/schemas/dashboard.schema";
 
 export interface IDashboardRepository {
-  metrics(input: DashboardMetricsInput): Promise<DashboardMetrics>;
-}
-
-function parseMonth(value: string): { ano: number; mes: number } {
-  const [ano, mes] = value.split("-").map(Number);
-  return { ano, mes };
+  metrics(): Promise<DashboardMetrics>;
 }
 
 export function createDashboardRepository(db: Database): IDashboardRepository {
   return {
-    async metrics(input): Promise<DashboardMetrics> {
-      const { ano: fromYear, mes: fromMonth } = parseMonth(input.fromMonth);
-      const conditions: SQL[] = [
-        eq(despesas.legislaturaId, input.legislaturaId),
-        sql`(${despesas.ano}, ${despesas.mes}) >= (${fromYear}, ${fromMonth})`,
-      ];
-      if (input.toMonth) {
-        const { ano: toYear, mes: toMonth } = parseMonth(input.toMonth);
-        conditions.push(
-          sql`(${despesas.ano}, ${despesas.mes}) <= (${toYear}, ${toMonth})`,
+    async metrics(): Promise<DashboardMetrics> {
+      const currentLegislaturas = await db
+        .select({
+          id: legislaturas.id,
+          dataInicio: legislaturas.dataInicio,
+          dataFim: legislaturas.dataFim,
+        })
+        .from(legislaturas)
+        .where(eq(legislaturas.legislaturaAtual, true))
+        .limit(2);
+
+      if (currentLegislaturas.length !== 1) {
+        throw new Error(
+          currentLegislaturas.length === 0
+            ? "Não há legislatura vigente cadastrada."
+            : "Há mais de uma legislatura vigente cadastrada.",
         );
       }
-      const where = and(...conditions);
+      const currentLegislatura = currentLegislaturas[0];
+      const where = eq(despesas.legislaturaId, currentLegislatura.id);
       const competenceDate = sql`coalesce(${despesas.dataDocumento}::date, make_date(${despesas.ano}, ${despesas.mes}, 1))`;
 
       const [totalsRows, monthlyRows, categoryRows, partyRows, membersRows] =
@@ -141,7 +142,9 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
           db
             .select({ total: count() })
             .from(deputadoLegislaturas)
-            .where(eq(deputadoLegislaturas.legislaturaId, input.legislaturaId)),
+            .where(
+              eq(deputadoLegislaturas.legislaturaId, currentLegislatura.id),
+            ),
         ]);
 
       const totals = totalsRows[0];
@@ -149,6 +152,10 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
       const totalParlamentares = membersRows[0]?.total ?? 0;
 
       return dashboardMetricsSchema.parse({
+        periodo: {
+          dataInicio: currentLegislatura.dataInicio,
+          dataFim: currentLegislatura.dataFim,
+        },
         totais: {
           totalBruto: Number(totals?.totalBruto ?? 0),
           totalGlosa: Number(totals?.totalGlosa ?? 0),
