@@ -41,6 +41,22 @@ in server schemas, and client fetching in feature hooks.
 - IDs, amounts, nullable documents, party, and UF follow the serialized schema
   described in [data access](data-access.md).
 
+## Dashboard metrics
+
+The dashboard uses dedicated grouped queries rather than loading paginated
+expense rows into the client. Monthly and category totals use the selected
+legislature and inclusive month range. Party totals use the party affiliation
+valid for the expense document date (or the first day of its competence when
+that date is unavailable); expenses without an identifiable affiliation are
+not included in the party breakdown. The per-member headline divides the net
+total by all deputies registered in the selected legislature.
+
+The initial dashboard legislature is the row marked `legislaturaAtual` in the
+database. Its `dataInicio` and `dataFim` define the initial month inputs. If the
+current legislature has no end date, the upper-bound month remains blank and the
+query does not apply an upper bound. Changing legislature resets the month
+inputs to that row's dates.
+
 ## Sources and environment
 
 The app reads the existing Câmara-domain database. There is no crawler, ingestion

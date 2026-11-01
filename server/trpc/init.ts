@@ -7,6 +7,7 @@ import {
   despesaService,
   legislaturaService,
   fornecedorService,
+  dashboardService,
 } from "@/server/services";
 
 export function createContext() {
@@ -15,6 +16,7 @@ export function createContext() {
     deputadoService,
     despesaService,
     fornecedorService,
+    dashboardService,
   };
 }
 export type Context = Awaited<ReturnType<typeof createContext>>;

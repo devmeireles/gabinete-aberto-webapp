@@ -3,23 +3,25 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useMemo,
   useState,
-  type Dispatch,
   type ReactNode,
-  type SetStateAction,
 } from "react";
+
+import { useLegislaturas } from "@/app/hooks/use-legislaturas";
 
 export interface IDashboardFilters {
   legislaturaId: number;
-  fromMonth: string; // "2026-01"
-  toMonth: string; // "2026-10"
+  fromMonth: string;
+  toMonth: string;
+  isInitialized: boolean;
 }
 
 export interface IDashboardFiltersActions {
-  setLegislaturaId: Dispatch<SetStateAction<number>>;
-  setFromMonth: Dispatch<SetStateAction<string>>;
-  setToMonth: Dispatch<SetStateAction<string>>;
+  setLegislaturaId: (value: number) => void;
+  setFromMonth: (value: string) => void;
+  setToMonth: (value: string) => void;
 }
 
 const FiltersContext = createContext<IDashboardFilters | null>(null);
@@ -52,19 +54,53 @@ interface IDashboardFiltersProviderProps {
 export function DashboardFiltersProvider({
   children,
 }: IDashboardFiltersProviderProps) {
-  const [legislaturaId, setLegislaturaId] = useState<number>(57);
-  const [fromMonth, setFromMonth] = useState<string>("2026-01");
-  const [toMonth, setToMonth] = useState<string>("2026-10");
+  const { data: legislaturas } = useLegislaturas();
+  const currentLegislatura = legislaturas?.find(
+    (legislatura) => legislatura.legislaturaAtual,
+  );
+  const [selectedLegislaturaId, setSelectedLegislaturaId] = useState<
+    number | null
+  >(null);
+  const [fromMonthOverride, setFromMonthOverride] = useState<string | null>(
+    null,
+  );
+  const [toMonthOverride, setToMonthOverride] = useState<string | null>(null);
 
-  const filters: IDashboardFilters = useMemo(
-    () => ({ legislaturaId, fromMonth, toMonth }),
-    [legislaturaId, fromMonth, toMonth],
+  const selectedLegislatura =
+    legislaturas?.find(
+      (legislatura) => legislatura.id === selectedLegislaturaId,
+    ) ?? currentLegislatura;
+  const legislaturaId = selectedLegislatura?.id ?? 0;
+  const fromMonth =
+    fromMonthOverride ?? selectedLegislatura?.dataInicio.slice(0, 7) ?? "";
+  const toMonth =
+    toMonthOverride ?? selectedLegislatura?.dataFim?.slice(0, 7) ?? "";
+  const setLegislaturaId = useCallback(
+    (id: number) => {
+      setSelectedLegislaturaId(id);
+      setFromMonthOverride(null);
+      setToMonthOverride(null);
+    },
+    [setFromMonthOverride, setSelectedLegislaturaId, setToMonthOverride],
   );
 
-  // Setters do useState têm identidade estável: este objeto nunca muda.
+  const filters: IDashboardFilters = useMemo(
+    () => ({
+      legislaturaId,
+      fromMonth,
+      toMonth,
+      isInitialized: Boolean(selectedLegislatura),
+    }),
+    [legislaturaId, fromMonth, toMonth, selectedLegislatura],
+  );
+
   const actions: IDashboardFiltersActions = useMemo(
-    () => ({ setLegislaturaId, setFromMonth, setToMonth }),
-    [],
+    () => ({
+      setLegislaturaId,
+      setFromMonth: (value) => setFromMonthOverride(value),
+      setToMonth: (value) => setToMonthOverride(value),
+    }),
+    [setFromMonthOverride, setLegislaturaId, setToMonthOverride],
   );
 
   return (

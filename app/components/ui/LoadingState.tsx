@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { LoaderCircle } from "lucide-react";
 
 interface ILoadingStateProps {
   label: string;
@@ -14,6 +15,17 @@ export const Skeleton = ({ className }: ISkeletonProps) => (
   <div
     aria-hidden="true"
     className={`animate-pulse rounded bg-surface-subtle ${className}`}
+  />
+);
+
+export const LoadingSpinner = ({
+  className = "h-4 w-4",
+}: {
+  className?: string;
+}) => (
+  <LoaderCircle
+    aria-hidden="true"
+    className={`shrink-0 animate-spin text-primary ${className}`}
   />
 );
 

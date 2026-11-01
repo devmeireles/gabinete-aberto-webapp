@@ -36,6 +36,12 @@ See [design system rules](design-system-rules.md) before changing styles.
 
 ## Existing reuse patterns
 
+`DashboardView` composes its filter controls, hero, metric cards, charts, and
+party summary; chart and summary components receive prepared dashboard metrics
+as props. The monthly evolution chart uses Recharts' animated line chart.
+Dashboard query refreshes show a visible spinner while retaining the previous
+results.
+
 `DespesasResults` handles query states, sort defaults/toggling, and pagination;
 `DespesasTable` renders supplied items and invokes `onSort`. Its `showDeputado`
 prop hides the deputy column when reused in a deputy profile. Placeholder data

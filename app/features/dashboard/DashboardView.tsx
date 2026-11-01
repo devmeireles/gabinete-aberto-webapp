@@ -1,117 +1,88 @@
 "use client";
 
-import {
-  useDashboardFilters,
-  useDashboardFiltersActions,
-} from "@/app/contexts/dashboard-filters.context";
+import { EmptyState } from "@/app/components/ui/EmptyState";
 import { ErrorState } from "@/app/components/ui/ErrorState";
-import { useLegislaturas } from "@/app/hooks/use-legislaturas";
+import { LoadingSpinner } from "@/app/components/ui/LoadingState";
+import { useDashboardFilters } from "@/app/contexts/dashboard-filters.context";
+import { useDashboardMetrics } from "@/app/hooks/use-dashboard-metrics";
+import { DashboardFilters } from "./DashboardFilters";
+import { DashboardHero } from "./DashboardHero";
+import { DashboardLoadingState } from "./DashboardLoadingState";
+import { DashboardMetricCards } from "./DashboardMetricCards";
+import { DashboardPartySummary } from "./DashboardPartySummary";
+import { ExpenseDistributionChart } from "./ExpenseDistributionChart";
+import { MonthlyEvolutionChart } from "./MonthlyEvolutionChart";
 
 export const DashboardView = () => {
-  const { fromMonth, legislaturaId, toMonth } = useDashboardFilters();
-  const { setFromMonth, setLegislaturaId, setToMonth } =
-    useDashboardFiltersActions();
-  const {
-    data: legislaturas = [],
-    isLoading: isLoadingLegislaturas,
-    isFetching: isFetchingLegislaturas,
-    isError: isErrorLegislaturas,
-    refetch: refetchLegislaturas,
-  } = useLegislaturas();
+  const { isInitialized } = useDashboardFilters();
 
   return (
-    <div>
-      <div className="flex flex-col gap-6 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="mb-1 flex items-center gap-2 text-xs font-semibold tracking-wider text-primary uppercase">
-            <span>Panorama Oficial</span>
-            <span aria-hidden="true">·</span>
-            <span>Câmara dos Deputados</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-text sm:text-3xl">
-            Transparência das Despesas Parlamentares
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-text-muted">
-            Acompanhamento auditável da Cota para o Exercício da Atividade
-            Parlamentar (CEAP), bancadas e deputados federais.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <DashboardFilters />
+      {isInitialized && <DashboardMetricsView />}
+    </div>
+  );
+};
 
-        {/* Legislatura & Period Selectors */}
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-surface p-3 text-xs">
-          <div>
-            <label
-              htmlFor="select-legislatura"
-              className="mb-1 block text-[11px] font-medium text-text-muted"
-            >
-              Legislatura
-            </label>
-            <select
-              id="select-legislatura"
-              value={legislaturaId}
-              disabled={isLoadingLegislaturas || legislaturas.length === 0}
-              onChange={(e) => setLegislaturaId(Number(e.target.value))}
-              className="rounded border border-border bg-surface px-2.5 py-1.5 font-medium text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {legislaturas.length === 0 && (
-                <option value={legislaturaId}>
-                  {isLoadingLegislaturas
-                    ? "Carregando legislaturas..."
-                    : "Nenhuma legislatura disponível"}
-                </option>
-              )}
-              {legislaturas.map((legislatura) => (
-                <option key={legislatura.id} value={legislatura.id}>
-                  {legislatura.id}ª Legislatura ({legislatura.dataInicio} -{" "}
-                  {legislatura.dataFim})
-                </option>
-              ))}
-            </select>
-          </div>
+const DashboardMetricsView = () => {
+  const { fromMonth, toMonth } = useDashboardFilters();
+  const { data, isPending, isPlaceholderData, isError, isFetching, refetch } =
+    useDashboardMetrics();
 
-          <div>
-            <label
-              htmlFor="filter-from-month"
-              className="mb-1 block text-[11px] font-medium text-text-muted"
-            >
-              De (Ano/Mês)
-            </label>
-            <input
-              type="month"
-              id="filter-from-month"
-              value={fromMonth}
-              onChange={(e) => setFromMonth(e.target.value)}
-              className="rounded border border-border bg-surface px-2 py-1 font-mono text-text tabular-nums focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="filter-to-month"
-              className="mb-1 block text-[11px] font-medium text-text-muted"
-            >
-              Até (Ano/Mês)
-            </label>
-            <input
-              type="month"
-              id="filter-to-month"
-              value={toMonth}
-              onChange={(e) => setToMonth(e.target.value)}
-              className="rounded border border-border bg-surface px-2 py-1 font-mono text-text tabular-nums focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-            />
-          </div>
-        </div>
-      </div>
-
-      {isErrorLegislaturas && (
+  return (
+    <>
+      {isError && (
         <ErrorState
-          message="Não foi possível carregar as opções de legislatura."
+          message={
+            data
+              ? "Não foi possível atualizar os indicadores. Exibindo os últimos resultados carregados."
+              : "Não foi possível carregar os indicadores do painel."
+          }
           onRetry={() => {
-            void refetchLegislaturas();
+            void refetch();
           }}
-          isRetrying={isFetchingLegislaturas}
+          isRetrying={isFetching}
         />
       )}
-    </div>
+
+      {isPending && !data && <DashboardLoadingState />}
+
+      {isFetching && data && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-medium text-text-muted shadow-xs"
+        >
+          <LoadingSpinner />
+          Atualizando indicadores para os filtros selecionados...
+        </div>
+      )}
+
+      {data && (
+        <div aria-busy={isPlaceholderData || isFetching} className="space-y-6">
+          <DashboardHero totais={data.totais} />
+          <DashboardMetricCards totais={data.totais} />
+
+          {data.totais.totalRegistros === 0 ? (
+            <EmptyState
+              title="Nenhuma despesa localizada no período"
+              description="Não há documentos para a legislatura e o intervalo selecionados. Ajuste o período para consultar outros registros."
+            />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <MonthlyEvolutionChart
+                  data={data.evolucaoMensal}
+                  fromMonth={fromMonth}
+                  toMonth={toMonth}
+                />
+                <ExpenseDistributionChart data={data.distribuicaoPorTipo} />
+              </div>
+              <DashboardPartySummary data={data.maioresGastosPartidos} />
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
 };

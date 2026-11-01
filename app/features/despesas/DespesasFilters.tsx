@@ -85,7 +85,8 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
             {!legislaturaIds && <option value="">Todas as legislaturas</option>}
             {legislaturas.map((l) => (
               <option key={l.id} value={l.id}>
-                {l.id}ª ({l.dataInicio.slice(0, 4)}–{l.dataFim.slice(0, 4)})
+                {l.id}ª ({l.dataInicio.slice(0, 4)}–
+                {l.dataFim?.slice(0, 4) ?? "atual"})
               </option>
             ))}
           </select>
