@@ -10,8 +10,8 @@ const fornecedorIdSchema = z
 
 export const fornecedorListInputSchema = z.object({
   busca: z.string().trim().min(2).max(100).optional(),
-  ordenarPor: z.enum(["nome", "cnpjCpf", "totalBruto"]).default("nome"),
-  ordem: z.enum(["asc", "desc"]).default("asc"),
+  ordenarPor: z.enum(["nome", "cnpjCpf", "totalBruto"]).default("totalBruto"),
+  ordem: z.enum(["asc", "desc"]).default("desc"),
   pagina: z.number().int().min(1).default(1),
   itens: z.number().int().min(1).max(100).default(20),
 });
@@ -25,6 +25,8 @@ export const fornecedorListItemSchema = z.object({
   nome: z.string(),
   cnpjCpf: z.string(),
   totalBruto: z.number(),
+  totalDespesas: z.number().int(),
+  tipoDespesaPrincipal: z.string().nullable(),
 });
 
 export const fornecedorListResultSchema = z.object({

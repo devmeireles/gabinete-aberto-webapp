@@ -68,6 +68,9 @@ Supplier list totals are the sum of linked expenses' gross document values
 (`valorDocumento`), not verified supplier payments. The list computes this with a
 single grouped join; expenses have an index on `fornecedorId`. If list volume or
 query cost grows, measure the query before considering a maintained summary table.
+The supplier card's service category is the most frequent linked expense type,
+counted across that supplier's records; it identifies a predominant category,
+not the supplier's exclusive business activity.
 
 `server/db/client.ts` reads server-side `process.env.DATABASE_URL` directly; there
 is no `env.ts` validation module. Never expose the connection string through a

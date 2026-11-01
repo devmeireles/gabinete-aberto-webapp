@@ -14,8 +14,9 @@ const ITEMS_PER_PAGE = 21;
 
 export const FornecedoresView = () => {
   const [busca, setBusca] = useState("");
-  const [ordenarPor, setOrdenarPor] = useState<FornecedorOrdenarPor>("nome");
-  const [ordem, setOrdem] = useState<"asc" | "desc">("asc");
+  const [ordenarPor, setOrdenarPor] =
+    useState<FornecedorOrdenarPor>("totalBruto");
+  const [ordem, setOrdem] = useState<"asc" | "desc">("desc");
   const [pagina, setPagina] = useState(1);
   const { data, isPending, isPlaceholderData, isError, isFetching, refetch } =
     useFornecedores({
@@ -36,7 +37,6 @@ export const FornecedoresView = () => {
     setOrdem(value === "totalBruto" ? "desc" : "asc");
     setPagina(1);
   };
-
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       <header className="border-b border-border pb-5">

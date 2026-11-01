@@ -42,6 +42,10 @@ as props. The monthly evolution chart uses Recharts' animated line chart.
 Dashboard query refreshes show a visible spinner while retaining the previous
 results.
 
+`FornecedorCard` is a fully clickable supplier summary with gross declared
+amount and the number of expense notes issued. Its service icon is selected by
+`formatExpenseCategoryIcon` from the supplier's most frequent expense category.
+
 `DespesasResults` handles query states, sort defaults/toggling, and pagination;
 `DespesasTable` renders supplied items and invokes `onSort`. Its `showDeputado`
 prop hides the deputy column when reused in a deputy profile. Placeholder data

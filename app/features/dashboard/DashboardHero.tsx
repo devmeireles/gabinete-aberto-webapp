@@ -1,6 +1,5 @@
 "use client";
 
-
 import { formatCurrency, formatInteger } from "@/app/lib/formartters.lib";
 import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
@@ -63,8 +62,9 @@ const HeroMetric = ({ label, value, detail, emphasis }: IHeroMetricProps) => (
       {label}
     </span>
     <span
-      className={`mt-1 block text-2xl font-black sm:text-3xl ${emphasis === "accent" ? "text-emerald-300" : "text-white"
-        }`}
+      className={`mt-1 block text-2xl font-black sm:text-3xl ${
+        emphasis === "accent" ? "text-emerald-300" : "text-white"
+      }`}
     >
       {value}
     </span>

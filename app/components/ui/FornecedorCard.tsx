@@ -1,5 +1,7 @@
+import { FileText } from "lucide-react";
 import Link from "next/link";
 
+import { formatExpenseCategoryIcon } from "@/app/lib/expense-category-icon.lib";
 import { formatCurrency } from "@/app/lib/formartters.lib";
 import type { FornecedorListItem } from "@/server/schemas/fornecedor.schema";
 
@@ -8,20 +10,41 @@ interface IFornecedorCardProps {
   href: string;
 }
 
-export const FornecedorCard = ({ fornecedor, href }: IFornecedorCardProps) => (
-  <Link
-    href={href}
-    className="block h-full rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-  >
-    <h2 className="truncate font-semibold text-text">{fornecedor.nome}</h2>
-    <p className="mt-1 font-mono text-xs text-text-muted">
-      {fornecedor.cnpjCpf}
-    </p>
-    <div className="mt-4 border-t border-border-subtle pt-3">
-      <p className="text-[11px] text-text-muted">Total bruto declarado</p>
-      <p className="mt-0.5 font-mono text-base font-semibold text-primary">
-        {formatCurrency(fornecedor.totalBruto)}
-      </p>
-    </div>
-  </Link>
-);
+export const FornecedorCard = ({ fornecedor, href }: IFornecedorCardProps) => {
+  return (
+    <Link
+      href={href}
+      aria-label={`Ver despesas de ${fornecedor.nome}, total bruto declarado ${formatCurrency(fornecedor.totalBruto)}, ${fornecedor.totalDespesas.toLocaleString("pt-BR")} notas emitidas`}
+      className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+    >
+      <div className="flex items-start gap-3">
+        <div className="shrink-0 rounded-xl bg-primary/10 p-3 text-primary">
+          {formatExpenseCategoryIcon(fornecedor.tipoDespesaPrincipal, {
+            className: "h-6 w-6",
+            "aria-hidden": true,
+          })}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-sm font-bold text-text transition-colors group-hover:text-primary">
+            {fornecedor.nome}
+          </h2>
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
+          Total bruto declarado
+        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xl font-extrabold text-text">
+            {formatCurrency(fornecedor.totalBruto)}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+            <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+            {fornecedor.totalDespesas.toLocaleString("pt-BR")} notas
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+};

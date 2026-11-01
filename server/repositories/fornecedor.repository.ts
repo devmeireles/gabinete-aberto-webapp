@@ -6,13 +6,14 @@ import {
   count,
   eq,
   ilike,
+  inArray,
   or,
   sql,
   sum,
   type SQL,
 } from "drizzle-orm";
 
-import { despesas, fornecedores } from "@/drizzle/schema";
+import { despesas, fornecedores, tiposDespesa } from "@/drizzle/schema";
 import type { Database } from "@/server/db/client";
 import {
   fornecedorDetailSchema,
@@ -55,11 +56,11 @@ export function createFornecedorRepository(
           ? totalBrutoExpression
           : input.ordenarPor === "cnpjCpf"
             ? fornecedores.cnpjCpf
-            : totalBrutoExpression;
+            : fornecedores.nome;
       const primaryOrder: SQL =
         input.ordem === "desc"
-          ? sql`${orderColumn} asc nulls last`
-          : sql`${orderColumn} desc nulls last`;
+          ? sql`${orderColumn} desc nulls last`
+          : sql`${orderColumn} asc nulls last`;
 
       const [rows, totals] = await Promise.all([
         db
@@ -68,6 +69,7 @@ export function createFornecedorRepository(
             nome: fornecedores.nome,
             cnpjCpf: fornecedores.cnpjCpf,
             totalBruto: totalBrutoExpression,
+            totalDespesas: count(despesas.id),
           })
           .from(fornecedores)
           .leftJoin(
@@ -82,6 +84,41 @@ export function createFornecedorRepository(
         db.select({ total: count() }).from(fornecedores).where(where),
       ]);
 
+      const serviceTypes =
+        rows.length > 0
+          ? await db
+              .select({
+                fornecedorId: despesas.fornecedorId,
+                tipoDespesa: tiposDespesa.nome,
+              })
+              .from(despesas)
+              .innerJoin(
+                tiposDespesa,
+                eq(tiposDespesa.id, despesas.tipoDespesaId),
+              )
+              .where(
+                inArray(
+                  despesas.fornecedorId,
+                  rows.map((row) => Number(row.id)),
+                ),
+              )
+              .groupBy(despesas.fornecedorId, tiposDespesa.nome)
+              .orderBy(
+                despesas.fornecedorId,
+                sql`count(*) desc`,
+                asc(tiposDespesa.nome),
+              )
+          : [];
+      const primaryServiceBySupplier = new Map<number, string>();
+      for (const serviceType of serviceTypes) {
+        if (!primaryServiceBySupplier.has(serviceType.fornecedorId)) {
+          primaryServiceBySupplier.set(
+            serviceType.fornecedorId,
+            serviceType.tipoDespesa,
+          );
+        }
+      }
+
       const total = totals[0]?.total ?? 0;
 
       return fornecedorListResultSchema.parse({
@@ -90,6 +127,9 @@ export function createFornecedorRepository(
           nome: row.nome,
           cnpjCpf: row.cnpjCpf,
           totalBruto: Number(row.totalBruto),
+          totalDespesas: row.totalDespesas,
+          tipoDespesaPrincipal:
+            primaryServiceBySupplier.get(Number(row.id)) ?? null,
         })),
         total,
         pagina: input.pagina,
