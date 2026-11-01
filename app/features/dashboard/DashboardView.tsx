@@ -9,6 +9,7 @@ import { DashboardLoadingState } from "./DashboardLoadingState";
 import { DashboardMetricCards } from "./DashboardMetricCards";
 import { DashboardPartySummary } from "./DashboardPartySummary";
 import { CitizenEquivalenceSimulator } from "./CitizenEquivalenceSimulator";
+import { BrazilExpensesMap } from "./BrazilExpensesMap";
 import { ExpenseDistributionChart } from "./ExpenseDistributionChart";
 import { MonthlyEvolutionChart } from "./MonthlyEvolutionChart";
 
@@ -56,6 +57,11 @@ const DashboardMetricsView = () => {
           <CitizenEquivalenceSimulator
             key={`${data.periodo.dataInicio}:${data.periodo.dataFim}:${data.totais.totalLiquido}`}
             totalLiquido={data.totais.totalLiquido}
+          />
+          <BrazilExpensesMap
+            data={data.despesasPorUf}
+            totais={data.totais}
+            despesasSemUf={data.despesasSemUf}
           />
 
           {data.totais.totalRegistros === 0 ? (

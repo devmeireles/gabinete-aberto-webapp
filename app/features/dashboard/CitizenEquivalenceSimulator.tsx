@@ -75,7 +75,7 @@ export const CitizenEquivalenceSimulator = ({
       </header>
 
       <div className="max-w-xl space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="equivalence-amount"
             className="text-xs font-bold tracking-wider text-text-muted uppercase"

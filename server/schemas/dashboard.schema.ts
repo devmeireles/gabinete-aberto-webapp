@@ -33,6 +33,18 @@ export const dashboardMetricsSchema = z.object({
       totalRegistros: z.number().int(),
     }),
   ),
+  despesasPorUf: z.array(
+    z.object({
+      siglaUf: z.string().length(2),
+      totalLiquido: z.number(),
+      totalRegistros: z.number().int(),
+      totalParlamentares: z.number().int(),
+    }),
+  ),
+  despesasSemUf: z.object({
+    totalLiquido: z.number(),
+    totalRegistros: z.number().int(),
+  }),
   maioresGastosPartidos: z.array(
     z.object({
       partidoId: z.number().int(),

@@ -55,101 +55,126 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
       const currentLegislatura = currentLegislaturas[0];
       const where = eq(despesas.legislaturaId, currentLegislatura.id);
       const competenceDate = sql`coalesce(${despesas.dataDocumento}::date, make_date(${despesas.ano}, ${despesas.mes}, 1))`;
+      const stateUf = sql<
+        string | null
+      >`nullif(upper(trim(${deputadoLegislaturas.siglaUf})), '')`;
 
-      const [totalsRows, monthlyRows, categoryRows, partyRows, membersRows] =
-        await Promise.all([
-          db
-            .select({
-              totalRegistros: count(),
-              totalBruto: sum(despesas.valorDocumento),
-              totalGlosa: sum(despesas.valorGlosa),
-              totalLiquido: sum(despesas.valorLiquido),
-              parlamentaresComDespesas: countDistinct(despesas.deputadoId),
-            })
-            .from(despesas)
-            .where(where),
+      const [
+        totalsRows,
+        monthlyRows,
+        categoryRows,
+        stateRows,
+        partyRows,
+        membersRows,
+      ] = await Promise.all([
+        db
+          .select({
+            totalRegistros: count(),
+            totalBruto: sum(despesas.valorDocumento),
+            totalGlosa: sum(despesas.valorGlosa),
+            totalLiquido: sum(despesas.valorLiquido),
+            parlamentaresComDespesas: countDistinct(despesas.deputadoId),
+          })
+          .from(despesas)
+          .where(where),
 
-          db
-            .select({
-              ano: despesas.ano,
-              mes: despesas.mes,
-              totalLiquido: sum(despesas.valorLiquido),
-              totalRegistros: count(),
-            })
-            .from(despesas)
-            .where(where)
-            .groupBy(despesas.ano, despesas.mes)
-            .orderBy(despesas.ano, despesas.mes),
+        db
+          .select({
+            ano: despesas.ano,
+            mes: despesas.mes,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .where(where)
+          .groupBy(despesas.ano, despesas.mes)
+          .orderBy(despesas.ano, despesas.mes),
 
-          db
-            .select({
-              tipoDespesaId: tiposDespesa.id,
-              tipoDespesa: tiposDespesa.nome,
-              totalLiquido: sum(despesas.valorLiquido),
-              totalRegistros: count(),
-            })
-            .from(despesas)
-            .innerJoin(
-              tiposDespesa,
-              eq(tiposDespesa.id, despesas.tipoDespesaId),
-            )
-            .where(where)
-            .groupBy(tiposDespesa.id, tiposDespesa.nome)
-            .orderBy(desc(sum(despesas.valorLiquido))),
+        db
+          .select({
+            tipoDespesaId: tiposDespesa.id,
+            tipoDespesa: tiposDespesa.nome,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .innerJoin(tiposDespesa, eq(tiposDespesa.id, despesas.tipoDespesaId))
+          .where(where)
+          .groupBy(tiposDespesa.id, tiposDespesa.nome)
+          .orderBy(desc(sum(despesas.valorLiquido))),
 
-          db
-            .select({
-              partidoId: partidos.id,
-              sigla: partidos.sigla,
-              nome: partidos.nome,
-              totalLiquido: sum(despesas.valorLiquido),
-              totalRegistros: count(),
-              parlamentaresComDespesas: countDistinct(
-                deputadoPartidoVigencias.deputadoId,
-              ),
-            })
-            .from(despesas)
-            .innerJoin(
-              deputadoPartidoVigencias,
-              and(
-                eq(deputadoPartidoVigencias.deputadoId, despesas.deputadoId),
-                eq(
-                  deputadoPartidoVigencias.legislaturaId,
-                  despesas.legislaturaId,
-                ),
-                or(
-                  isNull(deputadoPartidoVigencias.dataInicio),
-                  lte(deputadoPartidoVigencias.dataInicio, competenceDate),
-                ),
-                sql`(${deputadoPartidoVigencias.dataFim} IS NULL OR ${deputadoPartidoVigencias.dataFim} >= ${competenceDate})`,
-              ),
-            )
-            .innerJoin(
-              partidos,
-              eq(partidos.id, deputadoPartidoVigencias.partidoId),
-            )
-            .innerJoin(
-              partidoLegislaturas,
-              and(
-                eq(partidoLegislaturas.partidoId, partidos.id),
-                eq(partidoLegislaturas.legislaturaId, despesas.legislaturaId),
-              ),
-            )
-            .where(where)
-            .groupBy(partidos.id, partidos.sigla, partidos.nome)
-            .orderBy(desc(sum(despesas.valorLiquido))),
-
-          db
-            .select({ total: count() })
-            .from(deputadoLegislaturas)
-            .where(
-              eq(deputadoLegislaturas.legislaturaId, currentLegislatura.id),
+        db
+          .select({
+            siglaUf: stateUf,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(despesas.id),
+            totalParlamentares: countDistinct(deputadoLegislaturas.deputadoId),
+          })
+          .from(deputadoLegislaturas)
+          .leftJoin(
+            despesas,
+            and(
+              eq(despesas.deputadoId, deputadoLegislaturas.deputadoId),
+              eq(despesas.legislaturaId, deputadoLegislaturas.legislaturaId),
             ),
-        ]);
+          )
+          .where(eq(deputadoLegislaturas.legislaturaId, currentLegislatura.id))
+          .groupBy(stateUf),
+
+        db
+          .select({
+            partidoId: partidos.id,
+            sigla: partidos.sigla,
+            nome: partidos.nome,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+            parlamentaresComDespesas: countDistinct(
+              deputadoPartidoVigencias.deputadoId,
+            ),
+          })
+          .from(despesas)
+          .innerJoin(
+            deputadoPartidoVigencias,
+            and(
+              eq(deputadoPartidoVigencias.deputadoId, despesas.deputadoId),
+              eq(
+                deputadoPartidoVigencias.legislaturaId,
+                despesas.legislaturaId,
+              ),
+              or(
+                isNull(deputadoPartidoVigencias.dataInicio),
+                lte(deputadoPartidoVigencias.dataInicio, competenceDate),
+              ),
+              sql`(${deputadoPartidoVigencias.dataFim} IS NULL OR ${deputadoPartidoVigencias.dataFim} >= ${competenceDate})`,
+            ),
+          )
+          .innerJoin(
+            partidos,
+            eq(partidos.id, deputadoPartidoVigencias.partidoId),
+          )
+          .innerJoin(
+            partidoLegislaturas,
+            and(
+              eq(partidoLegislaturas.partidoId, partidos.id),
+              eq(partidoLegislaturas.legislaturaId, despesas.legislaturaId),
+            ),
+          )
+          .where(where)
+          .groupBy(partidos.id, partidos.sigla, partidos.nome)
+          .orderBy(desc(sum(despesas.valorLiquido))),
+
+        db
+          .select({ total: count() })
+          .from(deputadoLegislaturas)
+          .where(eq(deputadoLegislaturas.legislaturaId, currentLegislatura.id)),
+      ]);
 
       const totals = totalsRows[0];
       const totalLiquido = Number(totals?.totalLiquido ?? 0);
       const totalParlamentares = membersRows[0]?.total ?? 0;
+      const unassignedStateTotals = stateRows.find(
+        (row) => row.siglaUf === null,
+      );
 
       return dashboardMetricsSchema.parse({
         periodo: {
@@ -179,6 +204,21 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
           totalLiquido: Number(row.totalLiquido ?? 0),
           totalRegistros: row.totalRegistros,
         })),
+        despesasPorUf: stateRows
+          .filter(
+            (row): row is typeof row & { siglaUf: string } =>
+              row.siglaUf !== null,
+          )
+          .map((row) => ({
+            siglaUf: row.siglaUf.trim(),
+            totalLiquido: Number(row.totalLiquido ?? 0),
+            totalRegistros: row.totalRegistros,
+            totalParlamentares: row.totalParlamentares,
+          })),
+        despesasSemUf: {
+          totalLiquido: Number(unassignedStateTotals?.totalLiquido ?? 0),
+          totalRegistros: unassignedStateTotals?.totalRegistros ?? 0,
+        },
         maioresGastosPartidos: partyRows.map((row) => ({
           partidoId: row.partidoId,
           sigla: row.sigla,

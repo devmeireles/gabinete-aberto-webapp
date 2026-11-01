@@ -41,6 +41,9 @@ chart and summary components receive prepared dashboard metrics as props. The
 monthly evolution chart uses Recharts' animated line chart. Dashboard metrics
 are always scoped to the current legislature and refreshes show a visible
 spinner while retaining previous results.
+`BrazilExpensesMap` receives grouped net totals by UF for the current
+legislature. State paths are keyboard-accessible and selectable directly,
+without separate state or region selectors.
 `CitizenEquivalenceSimulator` starts at the dashboard's total net amount for
 the selected period, bounds its range to that amount, and labels fixed
 economic comparison references explicitly.

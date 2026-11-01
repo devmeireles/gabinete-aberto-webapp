@@ -51,6 +51,10 @@ affiliation valid for the expense document date (or the first day of its
 competence when that date is unavailable); expenses without an identifiable
 affiliation are not included in the party breakdown. The per-member headline
 divides the net total by all deputies registered in the current legislature.
+State map metrics are grouped by `deputado_legislaturas.sigla_uf` for that same
+legislature. The expense join is left-sided so deputies with no expenses still
+count in the state average denominator. Null or empty UF expense totals are
+returned separately and are not assigned to a state.
 
 The response includes the current legislature's `dataInicio` and `dataFim` for
 the monthly chart. If no row is marked current, or multiple rows are marked

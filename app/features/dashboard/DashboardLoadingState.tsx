@@ -20,6 +20,10 @@ export const DashboardLoadingState = () => (
         <Skeleton className="h-28 w-full" />
       </div>
     </section>
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
+      <Skeleton className="h-[34rem] w-full rounded-xl" />
+      <Skeleton className="h-96 w-full rounded-xl" />
+    </div>
     <div className="grid gap-6 lg:grid-cols-2">
       <Skeleton className="h-96 w-full rounded-xl" />
       <Skeleton className="h-96 w-full rounded-xl" />
