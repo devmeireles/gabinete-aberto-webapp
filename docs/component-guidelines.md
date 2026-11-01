@@ -36,11 +36,12 @@ See [design system rules](design-system-rules.md) before changing styles.
 
 ## Existing reuse patterns
 
-`DashboardView` composes the hero, metric cards, charts, and party summary;
-chart and summary components receive prepared dashboard metrics as props. The
-monthly evolution chart uses Recharts' animated line chart. Dashboard metrics
-are always scoped to the current legislature and refreshes show a visible
-spinner while retaining previous results.
+`DashboardView` composes the hero, charts, and party summary; the four primary
+metrics are integrated into `DashboardHero`. Chart and summary components
+receive prepared dashboard metrics as props. The monthly evolution chart uses
+Recharts' animated line chart. Dashboard metrics are always scoped to the
+current legislature and refreshes show a visible spinner while retaining
+previous results.
 `BrazilExpensesMap` receives grouped net totals by UF for the current
 legislature. State paths are keyboard-accessible and selectable directly,
 without separate state or region selectors.

@@ -6,7 +6,6 @@ import { LoadingSpinner } from "@/app/components/ui/LoadingState";
 import { useDashboardMetrics } from "@/app/hooks/use-dashboard-metrics";
 import { DashboardHero } from "./DashboardHero";
 import { DashboardLoadingState } from "./DashboardLoadingState";
-import { DashboardMetricCards } from "./DashboardMetricCards";
 import { DashboardPartySummary } from "./DashboardPartySummary";
 import { CitizenEquivalenceSimulator } from "./CitizenEquivalenceSimulator";
 import { BrazilExpensesMap } from "./BrazilExpensesMap";
@@ -53,7 +52,6 @@ const DashboardMetricsView = () => {
       {data && (
         <div aria-busy={isPlaceholderData || isFetching} className="space-y-6">
           <DashboardHero totais={data.totais} />
-          <DashboardMetricCards totais={data.totais} />
           <CitizenEquivalenceSimulator
             key={`${data.periodo.dataInicio}:${data.periodo.dataFim}:${data.totais.totalLiquido}`}
             totalLiquido={data.totais.totalLiquido}

@@ -1,6 +1,14 @@
 "use client";
 
-import { formatCurrency, formatInteger } from "@/app/lib/formartters.lib";
+import Link from "next/link";
+
+import { ArrowRight } from "lucide-react";
+
+import {
+  formatCompactCurrency,
+  formatCurrency,
+  formatInteger,
+} from "@/app/lib/formartters.lib";
 import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 interface IDashboardHeroProps {
@@ -26,24 +34,32 @@ export const DashboardHero = ({ totais }: IDashboardHeroProps) => (
       </p>
     </div>
 
-    <div className="relative z-10 mt-8 grid grid-cols-1 gap-4 border-t border-emerald-500/20 pt-6 sm:grid-cols-3">
+    <div
+      aria-label="Indicadores gerais da legislatura vigente"
+      className="relative z-10 mt-8 grid grid-cols-1 gap-3 border-t border-emerald-500/20 pt-6 sm:grid-cols-3 lg:grid-cols-3"
+    >
       <HeroMetric
         label="Total líquido declarado no período"
-        value={formatCurrency(totais.totalLiquido)}
-        detail="Valor líquido após glosas registradas"
+        value={formatCompactCurrency(totais.totalLiquido)}
+        exactValue={formatCurrency(totais.totalLiquido)}
+        detail={`Bruto ${formatCompactCurrency(totais.totalBruto)} · Glosas ${formatCompactCurrency(totais.totalGlosa)}`}
+        detailTitle={`Bruto ${formatCurrency(totais.totalBruto)} · Glosas ${formatCurrency(totais.totalGlosa)}`}
         emphasis="default"
+        href="/despesas"
       />
       <HeroMetric
-        label="Média por parlamentar"
-        value={formatCurrency(totais.mediaPorParlamentar)}
-        detail={`${formatInteger(totais.totalParlamentares)} parlamentares cadastrados na legislatura`}
-        emphasis="accent"
-      />
-      <HeroMetric
-        label="Documentos de despesa declarados"
+        label="Despesas declaradas"
         value={formatInteger(totais.totalRegistros)}
-        detail="Registros no período e legislatura selecionados"
+        detail="Documentos registrados na legislatura"
         emphasis="default"
+        href="/despesas"
+      />
+      <HeroMetric
+        label="Parlamentares com despesas"
+        value={formatInteger(totais.parlamentaresComDespesas)}
+        detail={`${formatInteger(totais.totalParlamentares)} parlamentares na legislatura`}
+        emphasis="accent"
+        href="/deputados"
       />
     </div>
   </section>
@@ -52,22 +68,57 @@ export const DashboardHero = ({ totais }: IDashboardHeroProps) => (
 interface IHeroMetricProps {
   label: string;
   value: string;
+  exactValue?: string;
   detail: string;
+  detailTitle?: string;
   emphasis: "default" | "accent";
+  href?: string;
 }
 
-const HeroMetric = ({ label, value, detail, emphasis }: IHeroMetricProps) => (
-  <div className="flex flex-col justify-between gap-2 rounded-xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-    <span className="block text-xs font-bold tracking-wider text-emerald-200 uppercase">
-      {label}
-    </span>
-    <span
-      className={`mt-1 block text-2xl font-black sm:text-3xl ${
-        emphasis === "accent" ? "text-emerald-300" : "text-white"
-      }`}
+const HeroMetric = ({
+  label,
+  value,
+  exactValue,
+  detail,
+  detailTitle,
+  emphasis,
+  href,
+}: IHeroMetricProps) => {
+  const content = (
+    <>
+      <span className="block text-xs font-bold tracking-wider text-emerald-200 uppercase">
+        {label}
+      </span>
+      <span
+        aria-label={
+          exactValue ? `${label}: ${exactValue}` : `${label}: ${value}`
+        }
+        title={exactValue}
+        className={`mt-1 block text-2xl font-black sm:text-3xl ${emphasis === "accent" ? "text-emerald-300" : "text-white"
+          }`}
+      >
+        {value}
+      </span>
+      <span
+        title={detailTitle}
+        className="mt-0.5 flex items-center justify-between gap-2 text-[11px] text-emerald-200"
+      >
+        {detail}
+        {href && <ArrowRight className="h-3 w-3 shrink-0" aria-hidden="true" />}
+      </span>
+    </>
+  );
+  const className =
+    "flex h-full flex-col justify-between gap-2 rounded-xl border border-white/15 bg-white/10 p-4 backdrop-blur-md";
+
+  return href ? (
+    <Link
+      href={href}
+      className={`${className} transition-colors hover:border-emerald-300/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white`}
     >
-      {value}
-    </span>
-    <span className="mt-0.5 block text-[11px] text-emerald-200">{detail}</span>
-  </div>
-);
+      {content}
+    </Link>
+  ) : (
+    <div className={className}>{content}</div>
+  );
+};

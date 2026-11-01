@@ -14,9 +14,10 @@ export const DashboardLoadingState = () => (
       <Skeleton className="h-6 w-64" />
       <Skeleton className="h-8 w-3/4" />
       <Skeleton className="h-4 w-full max-w-3xl" />
-      <div className="grid gap-4 border-t border-border pt-6 sm:grid-cols-3">
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-28 w-full" />
+      <div className="grid gap-3 border-t border-border pt-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
         <Skeleton className="h-28 w-full" />
       </div>
     </section>

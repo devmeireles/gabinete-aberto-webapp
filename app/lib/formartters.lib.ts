@@ -16,6 +16,10 @@ const decimalFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 2,
 });
 
+const compactCurrencyNumberFormatter = new Intl.NumberFormat("pt-BR", {
+  maximumFractionDigits: 1,
+});
+
 const integerFormatter = new Intl.NumberFormat("pt-BR");
 
 const MONTH_NAMES_SHORT = [
@@ -41,6 +45,46 @@ export function formatCurrency(value: number | null | undefined): string {
     return "R$ 0,00";
   }
   return currencyFormatter.format(value);
+}
+
+export function formatCompactCurrency(
+  value: number | null | undefined,
+): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "R$ 0,00";
+  }
+
+  const absoluteValue = Math.abs(value);
+  const units = [
+    {
+      threshold: 1_000_000_000_000,
+      divisor: 1_000_000_000_000,
+      singular: "trilhão",
+      plural: "trilhões",
+    },
+    {
+      threshold: 1_000_000_000,
+      divisor: 1_000_000_000,
+      singular: "bilhão",
+      plural: "bilhões",
+    },
+    {
+      threshold: 1_000_000,
+      divisor: 1_000_000,
+      singular: "milhão",
+      plural: "milhões",
+    },
+  ] as const;
+  const unit = units.find(({ threshold }) => absoluteValue >= threshold);
+
+  if (!unit) return formatCurrency(value);
+
+  const amount = value / unit.divisor;
+  const formattedAmount = compactCurrencyNumberFormatter.format(amount);
+  const roundedAmount = Math.round(Math.abs(amount) * 10) / 10;
+  const unitName = roundedAmount >= 2 ? unit.plural : unit.singular;
+
+  return `R$ ${formattedAmount} ${unitName}`;
 }
 
 /**

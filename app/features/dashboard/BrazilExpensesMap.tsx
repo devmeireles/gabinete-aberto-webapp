@@ -62,18 +62,18 @@ export const BrazilExpensesMap = ({
     return [1, 2, 3, 4].map(
       (quintile) =>
         positiveValues[
-          Math.min(
-            Math.ceil((positiveValues.length * quintile) / 5) - 1,
-            positiveValues.length - 1,
-          )
+        Math.min(
+          Math.ceil((positiveValues.length * quintile) / 5) - 1,
+          positiveValues.length - 1,
+        )
         ] ?? 0,
     );
   }, [metricValues]);
 
   const activeLocation = selectedUf
     ? brazilMap.locations.find(
-        (location) => location.id.toUpperCase() === selectedUf,
-      )
+      (location) => location.id.toUpperCase() === selectedUf,
+    )
     : undefined;
   const activeState = selectedUf ? statesByUf.get(selectedUf) : undefined;
   const displayedTotalLiquido =
@@ -137,11 +137,10 @@ export const BrazilExpensesMap = ({
             type="button"
             aria-pressed={metric === "total"}
             onClick={() => setMetric("total")}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-              metric === "total"
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${metric === "total"
                 ? "bg-primary text-white shadow-xs"
                 : "text-text-muted hover:text-text"
-            }`}
+              }`}
           >
             Total líquido
           </button>
@@ -149,11 +148,10 @@ export const BrazilExpensesMap = ({
             type="button"
             aria-pressed={metric === "average"}
             onClick={() => setMetric("average")}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-              metric === "average"
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${metric === "average"
                 ? "bg-primary text-white shadow-xs"
                 : "text-text-muted hover:text-text"
-            }`}
+              }`}
           >
             Média por deputado
           </button>
@@ -259,9 +257,6 @@ export const BrazilExpensesMap = ({
                 {activeLocation ? (
                   <>
                     {activeLocation.name}{" "}
-                    <span className="text-base font-semibold text-text-muted">
-                      ({selectedUf})
-                    </span>
                   </>
                 ) : (
                   "Brasil inteiro"
