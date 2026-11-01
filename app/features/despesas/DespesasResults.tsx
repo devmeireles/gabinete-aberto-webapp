@@ -1,6 +1,7 @@
 "use client";
 
 import { EmptyState } from "@/app/components/ui/EmptyState";
+import { ErrorState } from "@/app/components/ui/ErrorState";
 import { Pagination } from "@/app/components/ui/Pagination";
 import {
   IDespesasFilters,
@@ -31,7 +32,8 @@ export const DespesasResults = ({
 }: IDespesasResultsProps) => {
   const filters: IDespesasFilters = useDespesasFilters();
   const { setPagina, setSort, reset } = useDespesasFiltersActions();
-  const { data, isPending, isError, isPlaceholderData } = useDespesas();
+  const { data, isPending, isError, isPlaceholderData, isFetching, refetch } =
+    useDespesas();
 
   const handleSort = (column: DespesaOrdenarPor): void => {
     if (column === filters.ordenarPor) {
@@ -43,7 +45,7 @@ export const DespesasResults = ({
 
   if (isPending) {
     return (
-      <p className="text-sm text-text-muted" aria-busy="true">
+      <p className="text-sm text-text-muted" role="status" aria-busy="true">
         Carregando despesas...
       </p>
     );
@@ -51,9 +53,13 @@ export const DespesasResults = ({
 
   if (isError || !data) {
     return (
-      <p className="text-sm text-warning">
-        Não foi possível carregar as despesas.
-      </p>
+      <ErrorState
+        message="Não foi possível carregar as despesas."
+        onRetry={() => {
+          void refetch();
+        }}
+        isRetrying={isFetching}
+      />
     );
   }
 

@@ -1,12 +1,16 @@
 "use client";
 
 import React, { Suspense, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
-export type NavTab =
-  "/" | "/deputados" | "/despesas" | "/partidos" | "/comparar" | "/sobre";
+const navItems = [
+  { href: "/", label: "Visão geral" },
+  { href: "/deputados", label: "Deputados" },
+  { href: "/despesas", label: "Despesas" },
+] as const;
 
 export const Header = () => {
   return (
@@ -19,9 +23,12 @@ export const Header = () => {
 const HeaderFallback = () => (
   <header className="sticky top-0 z-30 border-b border-border bg-surface">
     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-      <span className="text-base font-bold text-text sm:text-lg">
+      <Link
+        href="/"
+        className="rounded text-base font-bold text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring sm:text-lg"
+      >
         Gabinete Aberto
-      </span>
+      </Link>
     </div>
   </header>
 );
@@ -30,35 +37,17 @@ const HeaderContent = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const pathname = usePathname();
-  const router = useRouter();
-
-  const navItems: Array<{ id: NavTab; label: string }> = [
-    { id: "/", label: "Visão geral" },
-    { id: "/deputados", label: "Deputados" },
-    { id: "/despesas", label: "Despesas" },
-    { id: "/partidos", label: "Partidos" },
-    { id: "/comparar", label: "Comparar" },
-    { id: "/sobre", label: "Sobre os dados" },
-  ];
-
-  const handleNavClick = (path: NavTab) => {
-    router.push(path);
-    setMobileMenuOpen(false);
-  };
-
-  const isActive = (path: NavTab) => pathname === path;
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-surface">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-8 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <span
-          onClick={() => handleNavClick("/")}
-          aria-label="Ir para a página inicial"
+        <Link
+          href="/"
           className="shrink-0 rounded text-left text-base font-bold tracking-tight whitespace-nowrap text-text transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring sm:text-lg"
         >
           Gabinete Aberto
-        </span>
+        </Link>
 
         {/* Desktop navigation */}
         <nav
@@ -66,22 +55,21 @@ const HeaderContent = () => {
           className="hidden items-center gap-6 text-sm font-medium md:flex"
         >
           {navItems.map((item) => {
-            const active = isActive(item.id);
+            const active = pathname === item.href;
 
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleNavClick(item.id)}
+              <Link
+                key={item.href}
+                href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`shrink-0 border-b-2 py-1 text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors ${
+                className={`shrink-0 rounded border-b-2 py-1 text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                   active
                     ? "border-primary text-primary"
                     : "border-transparent text-text-muted hover:text-text"
                 }`}
               >
                 {item.label}
-              </button>
+              </Link>
             );
           })}
         </nav>
@@ -124,22 +112,22 @@ const HeaderContent = () => {
           className="space-y-1 border-t border-border bg-surface px-4 py-3 md:hidden"
         >
           {navItems.map((item) => {
-            const active = isActive(item.id);
+            const active = pathname === item.href;
 
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleNavClick(item.id)}
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
                 aria-current={active ? "page" : undefined}
-                className={`w-full rounded px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                className={`block w-full rounded px-3 py-2.5 text-left text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                   active
                     ? "bg-primary-soft font-semibold text-primary"
                     : "text-text-muted hover:bg-surface-hover hover:text-text"
                 }`}
               >
                 {item.label}
-              </button>
+              </Link>
             );
           })}
         </nav>

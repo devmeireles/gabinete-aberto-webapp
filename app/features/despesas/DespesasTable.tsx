@@ -57,8 +57,9 @@ const SortableTh = ({
         type="button"
         onClick={() => onSort(column)}
         title={`Ordenar por ${label}`}
-        className={`inline-flex items-center gap-1 rounded font-semibold hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring ${isActive ? "text-text" : ""
-          }`}
+        className={`inline-flex items-center gap-1 rounded font-semibold hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring ${
+          isActive ? "text-text" : ""
+        }`}
       >
         <span>{label}</span>
         <Icon
@@ -89,8 +90,9 @@ export const DespesasTable = ({
 
   return (
     <div
-      className={`overflow-x-auto rounded-lg border border-border bg-surface shadow-xs ${dimmed ? "opacity-60" : ""
-        }`}
+      className={`overflow-x-auto rounded-lg border border-border bg-surface shadow-xs ${
+        dimmed ? "opacity-60" : ""
+      }`}
     >
       <table className="w-full border-collapse text-left text-xs">
         <thead>
@@ -150,7 +152,7 @@ export const DespesasTable = ({
                 <td className="px-3 py-3 font-sans">
                   <Link
                     href={`/deputados/${item.deputadoId}`}
-                    className="block max-w-60 truncate font-semibold text-text hover:text-primary hover:underline"
+                    className="block max-w-60 truncate rounded font-semibold text-text hover:text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     title={`Ver perfil de ${formatDeputadoLabel(item)}`}
                   >
                     {formatDeputadoLabel(item)}
@@ -198,7 +200,7 @@ export const DespesasTable = ({
                     href={item.urlDocumento}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] text-link hover:text-link-hover hover:underline"
+                    className="inline-flex items-center gap-1 rounded text-[11px] text-link hover:text-link-hover hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     title="Abre comprovante fiscal oficial em nova aba (origem externa)"
                   >
                     <span>Nota</span>

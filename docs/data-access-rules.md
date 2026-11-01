@@ -43,8 +43,8 @@ in server schemas, and client fetching in feature hooks.
 
 The app reads the existing Câmara-domain database. There is no crawler, ingestion
 service, Inngest workflow, seed command, or external API client in this repository.
-Crawler/raw-payload tables in `drizzle/schema.ts` and synchronization text in the
-footer do not establish a runnable ingestion process or verify its schedule.
+Crawler/raw-payload tables in `drizzle/schema.ts` do not establish a runnable
+ingestion process or verify its schedule.
 
 `server/db/client.ts` reads server-side `process.env.DATABASE_URL` directly; there
 is no `env.ts` validation module. Never expose the connection string through a

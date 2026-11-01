@@ -1,6 +1,6 @@
-import React from "react";
-import { ExternalLink, ShieldCheck, Database, Calendar } from "lucide-react";
+import { Calendar, Database, ExternalLink, ShieldCheck } from "lucide-react";
 import { cacheLife } from "next/cache";
+import React from "react";
 
 export const Footer: React.FC = async () => {
   async function getCurrentYear(): Promise<number> {
@@ -54,7 +54,7 @@ export const Footer: React.FC = async () => {
                   href="https://dadosabertos.camara.leg.br"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-link hover:text-link-hover hover:underline"
+                  className="inline-flex items-center gap-1 rounded text-link hover:text-link-hover hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   <span>Portal de Dados Abertos da Câmara</span>
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
@@ -65,7 +65,7 @@ export const Footer: React.FC = async () => {
                   href="https://dadosabertos.camara.leg.br/swagger/api.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-link hover:text-link-hover hover:underline"
+                  className="inline-flex items-center gap-1 rounded text-link hover:text-link-hover hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   <span>Documentação da API v2 (Swagger)</span>
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
@@ -76,7 +76,7 @@ export const Footer: React.FC = async () => {
                   href="https://www.camara.leg.br/transparencia"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-link hover:text-link-hover hover:underline"
+                  className="inline-flex items-center gap-1 rounded text-link hover:text-link-hover hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   <span>Portal da Transparência da Câmara</span>
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />

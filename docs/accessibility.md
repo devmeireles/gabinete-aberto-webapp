@@ -13,8 +13,11 @@ accessibility audit or custom zero-warning contract in this repository.
   `aria-controls`. The theme toggle has a name describing the current mode.
 - Many decorative Lucide icons use `aria-hidden="true"`; deputy photos have alt
   text and missing-photo fallbacks have labels.
-- Loading feedback includes `aria-busy` in expense results and the detail skeleton.
-  Empty results use the shared `EmptyState` component.
+- Loading feedback uses status/`aria-busy` states in feature results and the
+  detail skeleton. Empty results use the shared `EmptyState` component.
+- Data-loading failures use the shared `ErrorState` alert with a retry action where
+  retrying is meaningful. A missing deputy is announced as a status, not a
+  retriable network error.
 
 ## Review targets for UI changes
 
@@ -30,15 +33,8 @@ targets, not measured results for the current palette.
 
 Check mobile menu operation, narrow-screen table scrolling, zoom, truncated labels,
 and loading/error/empty states. Errors should be understandable and changes should
-be announced appropriately for the interaction; a shared alert/retry component is
-not currently implemented.
-
-## Known gaps
-
-The header brand is a clickable `<span>` without native keyboard behavior. Some controls lack
-explicit focus styling, and expense error feedback is a plain paragraph without
-an alert role or retry action. Do not describe the application as fully audited
-or silently fix these issues as part of a documentation-only review.
+be announced appropriately for the interaction. The shared `ErrorState` currently
+covers recoverable query failures; it is not a general error boundary.
 
 ## Tooling
 

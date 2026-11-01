@@ -2,18 +2,20 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { ErrorState } from "@/app/components/ui/ErrorState";
 import {
   useDespesasFilters,
   useDespesasFiltersActions,
   type IDespesasFilters,
 } from "@/app/contexts/despesas-filters.context";
 import { useLegislaturas } from "@/app/hooks/use-legislaturas";
+import { useDespesasActiveFiltersCount } from "@/app/hooks/use-despesas-active-filters-count";
 import { useTiposDespesa } from "@/app/hooks/use-tipos-despesa";
 
 const FIELD_CLASS: string =
-  "w-full px-2.5 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-focus-ring)]";
+  "w-full rounded border border-border bg-surface px-2.5 py-1.5 text-text placeholder:text-text-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring";
 const LABEL_CLASS: string =
-  "block text-[11px] font-medium text-[var(--color-text-muted)] mb-1";
+  "mb-1 block text-[11px] font-medium text-text-muted";
 
 interface IDespesasFiltersProps {
   /** Restringe as legislaturas oferecidas (ex.: só as do deputado). */
@@ -23,20 +25,23 @@ interface IDespesasFiltersProps {
 export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
   const filters: IDespesasFilters = useDespesasFilters();
   const { setFilter, reset } = useDespesasFiltersActions();
-  const { data: todasLegislaturas = [] } = useLegislaturas();
-  const { data: tipos = [] } = useTiposDespesa();
+  const {
+    data: todasLegislaturas = [],
+    isError: isErrorLegislaturas,
+    isFetching: isFetchingLegislaturas,
+    refetch: refetchLegislaturas,
+  } = useLegislaturas();
+  const {
+    data: tipos = [],
+    isError: isErrorTipos,
+    isFetching: isFetchingTipos,
+    refetch: refetchTipos,
+  } = useTiposDespesa();
+  const activeFiltersCount = useDespesasActiveFiltersCount();
 
   const legislaturas = legislaturaIds
     ? todasLegislaturas.filter((l) => legislaturaIds.includes(l.id))
     : todasLegislaturas;
-
-  // legislaturaId e deputadoId não contam: um é obrigatório, o outro é fixo.
-  const activeFiltersCount: number = [
-    filters.tipoDespesaId,
-    filters.fornecedor.trim(),
-    filters.fromMonth,
-    filters.toMonth,
-  ].filter(Boolean).length;
 
   // O intervalo de meses de uma legislatura não vale para outra: limpa junto.
   const handleLegislaturaChange = (legislaturaId: number): void => {
@@ -47,7 +52,25 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
 
   return (
     <div className="space-y-4 rounded-lg border border-border bg-surface p-4">
-      {/* Filtros sem dado no list (busca textual, deputado, partido, UF): ver versão anterior, seguem comentados. */}
+      {isErrorLegislaturas && (
+        <ErrorState
+          message="Não foi possível carregar as opções de legislatura."
+          onRetry={() => {
+            void refetchLegislaturas();
+          }}
+          isRetrying={isFetchingLegislaturas}
+        />
+      )}
+      {isErrorTipos && (
+        <ErrorState
+          message="Não foi possível carregar os tipos de despesa."
+          onRetry={() => {
+            void refetchTipos();
+          }}
+          isRetrying={isFetchingTipos}
+        />
+      )}
+
       <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <label htmlFor="filter-legislatura" className={LABEL_CLASS}>
@@ -136,8 +159,11 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle pt-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-text-muted">Ordenar por:</span>
+          <label htmlFor="despesas-sort" className="text-text-muted">
+            Ordenar por:
+          </label>
           <select
+            id="despesas-sort"
             value={filters.ordenarPor}
             onChange={(e) =>
               setFilter(
@@ -145,7 +171,7 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
                 e.target.value as IDespesasFilters["ordenarPor"],
               )
             }
-            className="rounded border border-border bg-surface px-2 py-1 text-text"
+            className="rounded border border-border bg-surface px-2 py-1 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             <option value="dataDocumento">Data do documento</option>
             <option value="valorLiquido">Valor líquido</option>
@@ -157,8 +183,9 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
             onClick={() =>
               setFilter("ordem", filters.ordem === "asc" ? "desc" : "asc")
             }
-            className="rounded border border-border bg-surface px-2 py-1 text-text"
-            title="Alternar direção da ordenação"
+            aria-label={`Ordenação ${filters.ordem === "asc" ? "crescente" : "decrescente"}. Alternar direção`}
+            aria-pressed={filters.ordem === "asc"}
+            className="rounded border border-border bg-surface px-2 py-1 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {filters.ordem === "asc" ? "Crescente ↑" : "Decrescente ↓"}
           </button>
@@ -169,7 +196,7 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+              className="inline-flex items-center gap-1 rounded font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             >
               <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Limpar {activeFiltersCount} filtros ativos</span>

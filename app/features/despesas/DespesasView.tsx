@@ -1,35 +1,14 @@
 "use client";
 
-
 import { TotalsBar } from "@/app/components/ui/TotalsBar";
-import {
-  IDespesasFilters,
-  useDespesasFilters,
-  useDespesasFiltersActions,
-} from "@/app/contexts/despesas-filters.context";
+import { useDespesasActiveFiltersCount } from "@/app/hooks/use-despesas-active-filters-count";
 import { useDespesas } from "@/app/hooks/use-despesas";
 import { DespesasFilters } from "./DespesasFilters";
 import { DespesasResults } from "./DespesasResults";
 
-const brl: Intl.NumberFormat = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
-const formatCurrency = (value: number): string => brl.format(value);
-
 export const DespesasView = () => {
-  const filters: IDespesasFilters = useDespesasFilters();
-
-  const { setPagina, reset } = useDespesasFiltersActions();
-
-  const { data, isPending, isError, isPlaceholderData } = useDespesas();
-
-  const activeFiltersCount: number = [
-    filters.tipoDespesaId,
-    filters.fornecedor.trim(),
-    filters.fromMonth,
-    filters.toMonth,
-  ].filter(Boolean).length;
+  const activeFiltersCount = useDespesasActiveFiltersCount();
+  const { data, isPlaceholderData } = useDespesas();
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">

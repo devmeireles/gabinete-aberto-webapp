@@ -7,13 +7,14 @@ import {
   useDeputadosFiltersActions,
   type IDeputadosFilters,
 } from "@/app/contexts/deputados-filters.context";
+import { ErrorState } from "@/app/components/ui/ErrorState";
 import { useDeputadosFiltroOpcoes } from "@/app/hooks/use-deputados-filtro-opcoes";
 import { useLegislaturas } from "@/app/hooks/use-legislaturas";
 
 const FIELD_CLASS: string =
-  "w-full px-2.5 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-focus-ring)]";
+  "w-full rounded border border-border bg-surface px-2.5 py-1.5 text-text placeholder:text-text-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring";
 const LABEL_CLASS: string =
-  "block text-[11px] font-medium text-[var(--color-text-muted)] mb-1";
+  "mb-1 block text-[11px] font-medium text-text-muted";
 
 const EMPTY_OPCOES = {
   siglasUf: [],
@@ -64,8 +65,18 @@ const SelectField = ({
 export const DeputadosFilters = () => {
   const filters: IDeputadosFilters = useDeputadosFilters();
   const { setFilter, reset } = useDeputadosFiltersActions();
-  const { data: opcoes = EMPTY_OPCOES } = useDeputadosFiltroOpcoes();
-  const { data: legislaturas = [] } = useLegislaturas();
+  const {
+    data: opcoes = EMPTY_OPCOES,
+    isError: isErrorOpcoes,
+    isFetching: isFetchingOpcoes,
+    refetch: refetchOpcoes,
+  } = useDeputadosFiltroOpcoes();
+  const {
+    data: legislaturas = [],
+    isError: isErrorLegislaturas,
+    isFetching: isFetchingLegislaturas,
+    refetch: refetchLegislaturas,
+  } = useLegislaturas();
 
   // ordenarPor/ordem/itens não contam como filtro.
   const activeFiltersCount: number = [
@@ -85,6 +96,25 @@ export const DeputadosFilters = () => {
 
   return (
     <div className="space-y-4 rounded-lg border border-border bg-surface p-4">
+      {isErrorOpcoes && (
+        <ErrorState
+          message="Não foi possível carregar as opções dos filtros de deputados."
+          onRetry={() => {
+            void refetchOpcoes();
+          }}
+          isRetrying={isFetchingOpcoes}
+        />
+      )}
+      {isErrorLegislaturas && (
+        <ErrorState
+          message="Não foi possível carregar as opções de legislatura."
+          onRetry={() => {
+            void refetchLegislaturas();
+          }}
+          isRetrying={isFetchingLegislaturas}
+        />
+      )}
+
       {/* Row 1: Nome, Legislatura, UF, Partido */}
       <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2 lg:grid-cols-4">
         <div>
@@ -260,8 +290,11 @@ export const DeputadosFilters = () => {
       {/* Row 4: Sort + Clear */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle pt-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-text-muted">Ordenar por:</span>
+          <label htmlFor="deputados-sort" className="text-text-muted">
+            Ordenar por:
+          </label>
           <select
+            id="deputados-sort"
             value={filters.ordenarPor}
             onChange={(e) =>
               setFilter(
@@ -269,7 +302,7 @@ export const DeputadosFilters = () => {
                 e.target.value as IDeputadosFilters["ordenarPor"],
               )
             }
-            className="rounded border border-border bg-surface px-2 py-1 text-text"
+            className="rounded border border-border bg-surface px-2 py-1 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             <option value="nome">Nome</option>
             <option value="siglaPartido">Partido</option>
@@ -282,8 +315,9 @@ export const DeputadosFilters = () => {
             onClick={() =>
               setFilter("ordem", filters.ordem === "asc" ? "desc" : "asc")
             }
-            className="rounded border border-border bg-surface px-2 py-1 text-text"
-            title="Alternar direção da ordenação"
+            aria-label={`Ordenação ${filters.ordem === "asc" ? "crescente" : "decrescente"}. Alternar direção`}
+            aria-pressed={filters.ordem === "asc"}
+            className="rounded border border-border bg-surface px-2 py-1 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {filters.ordem === "asc" ? "Crescente ↑" : "Decrescente ↓"}
           </button>
@@ -293,7 +327,7 @@ export const DeputadosFilters = () => {
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+            className="inline-flex items-center gap-1 rounded font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Limpar {activeFiltersCount} filtros ativos</span>

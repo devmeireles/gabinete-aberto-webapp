@@ -28,7 +28,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <button
             type="button"
             onClick={onResetFilters}
-            className="inline-flex items-center gap-1.5 rounded bg-primary-soft px-3.5 py-2 text-xs font-medium text-primary transition-colors hover:bg-surface-subtle"
+            className="inline-flex items-center gap-1.5 rounded bg-primary-soft px-3.5 py-2 text-xs font-medium text-primary transition-colors hover:bg-surface-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             <span>{actionLabel}</span>

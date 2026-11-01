@@ -39,6 +39,9 @@ state stays local. Server data stays in TanStack Query. There is no generic
 controlled/uncontrolled hook or compound Select/Dialog API to copy from this repo.
 Add such abstractions only when a requested feature needs them.
 
+`ErrorState` standardizes recoverable query errors and retry actions across feature
+views. Keep loading and not-found states specific to their owning feature.
+
 ## Native wrappers, classes, and refs
 
 Existing UI components have explicit domain props rather than spreading all DOM

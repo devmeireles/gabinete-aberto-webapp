@@ -1,6 +1,7 @@
 "use client";
 
 import { DeputyAvatar } from "@/app/components/ui/DeputyAvatar";
+import { ErrorState } from "@/app/components/ui/ErrorState";
 import { useDeputadoDetalhe } from "@/app/hooks/use-deputado-detalhe";
 import {
   formatBirthDate,
@@ -14,15 +15,15 @@ import {
   Calendar,
   Check,
   ChevronRight,
-  Download,
   ExternalLink,
   GraduationCap,
   Mail,
   MapPin,
   Share2,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { DeputadoDespesas } from "./DeputadoDespesas";
 
 interface IDeputadoDetailViewProps {
@@ -30,25 +31,51 @@ interface IDeputadoDetailViewProps {
 }
 
 export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
-  const { data, isPending, isError } = useDeputadoDetalhe(id);
+  const { data, error, isPending, isError, isFetching, refetch } =
+    useDeputadoDetalhe(id);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
 
-  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  if (isPending) {
+    return (
+      <p className="p-6 text-sm text-text-muted" role="status" aria-busy="true">
+        Carregando perfil do deputado...
+      </p>
+    );
+  }
 
-  if (isPending) return <p>Carregando...</p>;
-  if (isError || !data) return <p>Deputado não encontrado.</p>;
+  if (isError || !data) {
+    if (error?.data?.code === "NOT_FOUND") {
+      return (
+        <p className="p-6 text-sm text-text-muted" role="status">
+          Deputado não encontrado.
+        </p>
+      );
+    }
+
+    return (
+      <div className="p-6">
+        <ErrorState
+          message="Não foi possível carregar o perfil do deputado."
+          onRetry={() => {
+            void refetch();
+          }}
+          isRetrying={isFetching}
+        />
+      </div>
+    );
+  }
 
   const { perfil: deputado, filiacoes } = data;
 
-  const onBack = () => { };
-  const handleDownloadCsv = () => { };
-
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     try {
-      const url = new URL(window.location.href);
-      navigator.clipboard.writeText(url.toString());
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
-    } catch { }
+      await navigator.clipboard.writeText(window.location.href);
+      setCopyStatus("success");
+    } catch {
+      setCopyStatus("error");
+    }
   };
 
   return (
@@ -59,14 +86,13 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
           aria-label="Navegação em trilha"
           className="flex items-center gap-2 text-xs text-text-muted"
         >
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-1 font-medium transition-colors hover:text-primary"
+          <Link
+            href="/deputados"
+            className="inline-flex items-center gap-1 rounded font-medium transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Deputados</span>
-          </button>
+          </Link>
           <ChevronRight
             className="h-3 w-3 text-text-subtle"
             aria-hidden="true"
@@ -89,7 +115,7 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
             className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             title="Copiar link direto para este dossiê"
           >
-            {copiedLink ? (
+            {copyStatus === "success" ? (
               <>
                 <Check
                   className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
@@ -110,21 +136,27 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={handleDownloadCsv}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-            title="Baixar extrato completo de despesas em formato CSV"
-          >
-            <Download className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Exportar Despesas (CSV)</span>
-          </button>
+          {copyStatus !== "idle" && (
+            <span
+              role="status"
+              aria-live="polite"
+              className={
+                copyStatus === "success"
+                  ? "text-xs text-success"
+                  : "text-xs text-danger"
+              }
+            >
+              {copyStatus === "success"
+                ? "Link copiado."
+                : "Não foi possível copiar o link. Verifique a permissão do navegador."}
+            </span>
+          )}
 
           <a
             href={`https://www.camara.leg.br/deputados/${deputado.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-text-muted transition-colors hover:bg-surface-hover hover:text-text"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-text-muted transition-colors hover:bg-surface-hover hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             title="Abrir página oficial no Portal da Câmara dos Deputados"
           >
             <span>Portal Oficial</span>
@@ -219,7 +251,7 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
                     />
                     <a
                       href={`mailto:${deputado.gabinete.email}`}
-                      className="truncate text-link hover:underline"
+                      className="truncate rounded text-link hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       title="Enviar e-mail para o gabinete parlamentar"
                     >
                       {deputado.gabinete.email}
@@ -272,10 +304,11 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
                 return (
                   <div key={idx} className="group relative">
                     <div
-                      className={`absolute top-1 -left-7.75 h-3 w-3 rounded-full border-2 border-surface ${isAtual
+                      className={`absolute top-1 -left-7.75 h-3 w-3 rounded-full border-2 border-surface ${
+                        isAtual
                           ? "bg-primary ring-2 ring-primary/20"
                           : "bg-text-subtle"
-                        }`}
+                      }`}
                       aria-hidden="true"
                     />
                     <div className="flex flex-col gap-1 text-xs sm:flex-row sm:items-baseline sm:justify-between">

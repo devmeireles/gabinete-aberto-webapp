@@ -33,6 +33,7 @@ export const DeputyAvatar: React.FC<DeputyAvatarProps> = ({
   if (!urlFoto || hasError) {
     return (
       <div
+        role="img"
         className={`${containerClasses} flex items-center justify-center font-semibold text-primary select-none`}
         title={nome}
         aria-label={`Sem fotografia para ${nome}`}

@@ -11,7 +11,7 @@
     "lint:check": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
-    "check": "npm run format:check && npm run lint && npm run typecheck"
+    "check": "npm run format:check && npm run lint:check && npm run typecheck"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

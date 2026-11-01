@@ -4,14 +4,20 @@ import {
   useDashboardFilters,
   useDashboardFiltersActions,
 } from "@/app/contexts/dashboard-filters.context";
+import { ErrorState } from "@/app/components/ui/ErrorState";
 import { useLegislaturas } from "@/app/hooks/use-legislaturas";
 
 export const DashboardView = () => {
   const { fromMonth, legislaturaId, toMonth } = useDashboardFilters();
   const { setFromMonth, setLegislaturaId, setToMonth } =
     useDashboardFiltersActions();
-  const { data: legislaturas = [], isLoading: isLoadingLegislaturas } =
-    useLegislaturas();
+  const {
+    data: legislaturas = [],
+    isLoading: isLoadingLegislaturas,
+    isFetching: isFetchingLegislaturas,
+    isError: isErrorLegislaturas,
+    refetch: refetchLegislaturas,
+  } = useLegislaturas();
 
   return (
     <div>
@@ -43,9 +49,17 @@ export const DashboardView = () => {
             <select
               id="select-legislatura"
               value={legislaturaId}
+              disabled={isLoadingLegislaturas || legislaturas.length === 0}
               onChange={(e) => setLegislaturaId(Number(e.target.value))}
-              className="rounded border border-border bg-surface px-2.5 py-1.5 font-medium text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+              className="rounded border border-border bg-surface px-2.5 py-1.5 font-medium text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
             >
+              {legislaturas.length === 0 && (
+                <option value={legislaturaId}>
+                  {isLoadingLegislaturas
+                    ? "Carregando legislaturas..."
+                    : "Nenhuma legislatura disponível"}
+                </option>
+              )}
               {legislaturas.map((legislatura) => (
                 <option key={legislatura.id} value={legislatura.id}>
                   {legislatura.id}ª Legislatura ({legislatura.dataInicio} -{" "}
@@ -89,24 +103,15 @@ export const DashboardView = () => {
         </div>
       </div>
 
-      {/* Audit & Update Banner */}
-      {/* {metrics && (
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-border-subtle bg-[var(--color-surface>
-                -subtle)] text-xs text-text-muted">
-                    <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
-                        <span>
-                            Última sincronização de dados: <strong className="text-text">{formatDateTime(metrics.meta.lastUpdatedAt)}</strong>
-                        </span>
-                        <span aria-hidden="true">·</span>
-                        <span>{metrics.meta.proximaCargaAgendada}</span>
-                    </div>
-
-                    <div className="text-[11px] text-text-subtle">
-                        {metrics.legislaturaAtual.numero}ª Legislatura: {formatDate(metrics.legislaturaAtual.dataInicio)} até {formatDate(metrics.legislaturaAtual.dataFim)}
-                    </div>
-                </div>
-            )} */}
+      {isErrorLegislaturas && (
+        <ErrorState
+          message="Não foi possível carregar as opções de legislatura."
+          onRetry={() => {
+            void refetchLegislaturas();
+          }}
+          isRetrying={isFetchingLegislaturas}
+        />
+      )}
     </div>
   );
 };

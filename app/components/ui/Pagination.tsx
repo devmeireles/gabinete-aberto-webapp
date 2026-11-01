@@ -19,7 +19,7 @@ const numberFormat: Intl.NumberFormat = new Intl.NumberFormat("pt-BR");
 const NUMBER_CLASS: string =
   "font-mono tabular-nums font-semibold text-[var(--color-text)]";
 const BUTTON_CLASS: string =
-  "inline-flex items-center gap-1 px-3 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors";
+  "inline-flex items-center gap-1 rounded border border-border bg-surface px-3 py-1.5 text-text transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-40";
 
 export const Pagination = ({
   meta,

@@ -52,19 +52,23 @@ populated database; the UI is not backed by fallback fixtures.
 
 ## Build and static checks
 
-Available package scripts are `dev`, `build`, `start`, and `lint`:
+Available package scripts are `dev`, `build`, `start`, `format:check`,
+`format:fix`, `lint:check`, `lint:fix`, `typecheck`, and `check`:
 
 ```sh
-npm run lint
-npx tsc --noEmit
+npm run format:check
+npm run lint:check
+npm run typecheck
+npm run check
 npm run build
 ```
 
-`lint` runs ESLint with Next core-web-vitals and TypeScript presets; no custom
-style/a11y guardrail rules are configured. `tsc` is a direct compiler check, not a
-package script. `PageProps`/`LayoutProps` come from generated Next route types;
-if they are absent in a clean checkout, run `npx next typegen` before the compiler
-check. A running dev server or build also generates route types.
+`lint:check` runs ESLint with Next core-web-vitals and TypeScript presets; no
+custom style/a11y guardrail rules are configured. `typecheck` runs `tsc --noEmit`.
+`check` runs formatting, lint, and type checks in sequence. `PageProps`/`LayoutProps`
+come from generated Next route types; if they are absent in a clean checkout, run
+`npx next typegen` before the compiler check. A running dev server or build also
+generates route types.
 
 `build` compiles and prerenders the production app; it does not replace lint or
 manual interaction checks. The layout uses Google-hosted Geist fonts via
@@ -93,10 +97,6 @@ Relevant flows include:
   page size; check null document dates/links and placeholder-data transitions.
 - Check loading/error feedback, narrow-screen table scrolling, mobile navigation,
   keyboard operation, and light/dark/automatic theme modes.
-
-The home dashboard currently exposes introductory content and filter controls,
-without implemented overview metrics. `/partidos`, `/comparar`, and `/sobre` are
-header destinations without pages; do not report those as completed flows.
 
 For documentation-only edits, review source accuracy, relative links, file paths,
 command availability, and diff scope. Runtime tests are unnecessary when no

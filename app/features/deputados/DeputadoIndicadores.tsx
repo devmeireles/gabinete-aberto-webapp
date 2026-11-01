@@ -7,7 +7,6 @@ import {
   Receipt,
   type LucideIcon,
 } from "lucide-react";
-// import { Compass, Plane } from "lucide-react"; // cards de voos (comentados abaixo)
 
 import {
   useDespesasFilters,
@@ -38,19 +37,15 @@ const IndicatorCard = ({
   dimmed,
 }: IIndicatorCardProps) => (
   <div
-    className={`space-y-1 rounded-xl border border-border bg-surface p-4 shadow-2xs transition-opacity ${dimmed ? "opacity-60" : ""
-      }`}
+    className={`space-y-1 rounded-xl border border-border bg-surface p-4 shadow-2xs transition-opacity ${
+      dimmed ? "opacity-60" : ""
+    }`}
   >
     <div className="flex items-center justify-between text-xs font-medium text-text-muted">
       <span>{label}</span>
-      <Icon
-        className="h-4 w-4 text-primary"
-        aria-hidden="true"
-      />
+      <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
     </div>
-    <div className="font-mono text-2xl font-bold text-text">
-      {value}
-    </div>
+    <div className="font-mono text-2xl font-bold text-text">{value}</div>
     <div className="text-[11px] text-text-subtle">{caption}</div>
   </div>
 );
@@ -117,26 +112,6 @@ export const DeputadoIndicadores = () => {
           icon={Ban}
           dimmed={dimmed}
         />
-
-        {/* Deslocamentos Aéreos e Tempo no Ar: sem coordenadas de aeroportos para calcular km/tempo.
-                    Dá para contar bilhetes e somar o valor de passagens com o que já existe (bilhetes_aereos_csv),
-                    mas distância e horas exigem uma tabela de aeroportos (IATA → lat/long) para a fórmula de Haversine.
-
-                <IndicatorCard
-                    label="Deslocamentos Aéreos"
-                    value={resumoVoos ? `${resumoVoos.totalBilhetes} bilhetes` : "—"}
-                    caption={resumoVoos ? `${resumoVoos.distanciaTotalKm.toLocaleString("pt-BR")} km voados` : "Cálculo geodésico Haversine"}
-                    icon={Plane}
-                    dimmed={dimmed}
-                />
-                <IndicatorCard
-                    label="Tempo Estimado no Ar"
-                    value={resumoVoos ? resumoVoos.tempoVooTotalFormatado : "—"}
-                    caption={resumoVoos ? `Equivale a ${resumoVoos.voltasAoRedorDaTerra} voltas na Terra` : "Velocidade cruzeiro 800 km/h"}
-                    icon={Compass}
-                    dimmed={dimmed}
-                />
-                */}
       </div>
     </section>
   );

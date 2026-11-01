@@ -45,9 +45,9 @@ dims existing rows and disables pagination.
 and most recent available legislature. It reuses expense filters/results and
 `DeputadoIndicadores`. Preserve the scoped initial state on reset.
 
-Use `EmptyState` for no matches and its reset action when available. Loading and
-error feedback currently lives within feature components; there is no shared
-`ErrorState` or skeleton library. The detail route has a local Suspense skeleton.
+Use `EmptyState` for no matches and its reset action when available. Loading
+feedback remains feature-specific. `ErrorState` is shared for recoverable query
+failures; the detail route has a local Suspense skeleton.
 
 ## Verification
 

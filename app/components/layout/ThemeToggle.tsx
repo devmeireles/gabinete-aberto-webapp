@@ -1,67 +1,82 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useSyncExternalStore } from "react";
 import { Sun, Moon, Monitor } from "lucide-react";
 
 export type ThemeMode = "light" | "dark" | "auto";
 
+const THEME_STORAGE_KEY = "theme";
+const THEME_CHANGE_EVENT = "gabinete-theme-change";
+let inMemoryTheme: ThemeMode = "auto";
+
+function isThemeMode(value: string | null): value is ThemeMode {
+  return value === "light" || value === "dark" || value === "auto";
+}
+
+function getThemeSnapshot(): ThemeMode {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    inMemoryTheme =
+      saved === null ? inMemoryTheme : isThemeMode(saved) ? saved : "auto";
+  } catch {
+    return inMemoryTheme;
+  }
+
+  return inMemoryTheme;
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return "auto";
+}
+
+function subscribeToTheme(onChange: () => void): () => void {
+  window.addEventListener(THEME_CHANGE_EVENT, onChange);
+  return () => window.removeEventListener(THEME_CHANGE_EVENT, onChange);
+}
+
+function updateTheme(mode: ThemeMode): void {
+  inMemoryTheme = mode;
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  } catch {
+    // Theme changes remain available even if storage is disabled.
+  }
+  window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+}
+
+function applyTheme(mode: ThemeMode): void {
+  const root = document.documentElement;
+  if (mode === "dark") {
+    root.setAttribute("data-theme", "dark");
+    root.classList.add("dark");
+  } else if (mode === "light") {
+    root.setAttribute("data-theme", "light");
+    root.classList.remove("dark");
+  } else {
+    root.removeAttribute("data-theme");
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }
+}
+
 export const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<ThemeMode>("auto");
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getServerThemeSnapshot,
+  );
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("theme") as ThemeMode;
-      if (saved && ["light", "dark", "auto"].includes(saved)) {
-        setTheme(saved);
-        applyTheme(saved);
-      } else {
-        // Check system preference
-        applyTheme("auto");
-      }
-    } catch {
-      applyTheme("auto");
-    }
-  }, []);
-
-  const applyTheme = (mode: ThemeMode) => {
-    const root = document.documentElement;
-    if (mode === "dark") {
-      root.setAttribute("data-theme", "dark");
-      root.classList.add("dark");
-    } else if (mode === "light") {
-      root.setAttribute("data-theme", "light");
-      root.classList.remove("dark");
-    } else {
-      root.removeAttribute("data-theme");
-      if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-  };
+    applyTheme(theme);
+  }, [theme]);
 
   const cycleTheme = () => {
-    let next: ThemeMode;
-    if (theme === "auto") {
-      // If currently auto, switch to explicit dark
-      next = "dark";
-    } else if (theme === "dark") {
-      next = "light";
-    } else {
-      next = "auto";
-    }
-
-    setTheme(next);
-    applyTheme(next);
-    try {
-      localStorage.setItem("theme", next);
-    } catch {
-      // Ignore
-    }
+    const next: ThemeMode =
+      theme === "auto" ? "dark" : theme === "dark" ? "light" : "auto";
+    updateTheme(next);
   };
 
   const getLabel = () => {
