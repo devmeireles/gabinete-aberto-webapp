@@ -89,6 +89,9 @@ Relevant flows include:
 - `/deputados/[id]`: valid detail, malformed/nonpositive route ID, and a missing
   positive ID. Invalid route IDs call `notFound`; absent records raise tRPC
   `NOT_FOUND` and are handled by the client view.
+- `/fornecedores`: name/CPF/CNPJ search, sort, pagination, and reset.
+- `/fornecedores/[id]`: valid and missing supplier IDs, all-legislature expense
+  results, legislature/month/type filters, sorting, and reset retaining supplier ID.
 - Profile expenses: confirm hidden deputy column, available legislatures, and reset
   retaining the profile's deputy and initial legislature.
 - `/despesas`: supplier name/CPF/CNPJ, expense type, inclusive month bounds, inverted

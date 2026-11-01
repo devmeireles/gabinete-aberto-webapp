@@ -15,8 +15,9 @@ export const DESPESA_ORDENAR_POR = [
 ] as const;
 
 export const despesaListInputSchema = z.object({
-  legislaturaId: z.number().int().positive(),
+  legislaturaId: z.number().int().positive().optional(),
   deputadoId: z.number().int().positive().optional(),
+  fornecedorId: z.number().int().positive().safe().optional(),
   tipoDespesaId: z.number().int().positive().optional(),
   fromMonth: monthSchema.optional(),
   toMonth: monthSchema.optional(),
@@ -30,6 +31,7 @@ export const despesaListInputSchema = z.object({
 export const despesaItemSchema = z.object({
   id: z.string(), // bigint do banco serializado como string
   deputadoId: z.number().int(),
+  fornecedorId: z.string(),
   deputadoNome: z.string(),
   ano: z.number().int(),
   mes: z.number().int(),

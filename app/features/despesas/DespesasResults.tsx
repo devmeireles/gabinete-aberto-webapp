@@ -2,6 +2,7 @@
 
 import { EmptyState } from "@/app/components/ui/EmptyState";
 import { ErrorState } from "@/app/components/ui/ErrorState";
+import { ExpenseTableSkeleton } from "@/app/components/ui/LoadingState";
 import { Pagination } from "@/app/components/ui/Pagination";
 import {
   IDespesasFilters,
@@ -45,9 +46,10 @@ export const DespesasResults = ({
 
   if (isPending) {
     return (
-      <p className="text-sm text-text-muted" role="status" aria-busy="true">
-        Carregando despesas...
-      </p>
+      <ExpenseTableSkeleton
+        label="Carregando despesas"
+        showDeputado={showDeputado}
+      />
     );
   }
 

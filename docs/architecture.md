@@ -10,32 +10,34 @@ from the code; documentation cleanup does not authorize an application redesign.
 `package.json` declares Next.js 16.4.3, React 19.3.0, TypeScript, Tailwind CSS 4,
 tRPC 11, TanStack Query 5, Zod 4, Drizzle ORM, and Neon serverless PostgreSQL.
 
-| Location                                       | Responsibility                                               |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| `app/`                                         | App Router pages, layout, global CSS, and tRPC HTTP route    |
-| `app/features/{dashboard,deputados,despesas}/` | Domain views and sections                                    |
-| `app/components/ui/`                           | Custom reusable UI, including errors, pagination, and totals |
-| `app/components/layout/`                       | Header, footer, and theme toggle                             |
-| `app/contexts/`                                | Filter values and actions scoped to a view                   |
-| `app/hooks/`                                   | Query hooks, debounce, and filter helpers                    |
-| `app/lib/`                                     | tRPC provider/query client and formatting helpers            |
-| `app/interfaces/`                              | Existing UI interfaces                                       |
-| `server/trpc/`                                 | Context, router composition, and procedures                  |
-| `server/services/`                             | Service interfaces/factories and dependency wiring           |
-| `server/repositories/`                         | Drizzle queries and result mapping/validation                |
-| `server/schemas/`                              | Zod contracts and inferred domain types                      |
-| `server/db/client.ts`                          | Server-only Neon/Drizzle client                              |
-| `drizzle/`                                     | Actual database schema, relations, and migration artifacts   |
+| Location                                                    | Responsibility                                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------ |
+| `app/`                                                      | App Router pages, layout, global CSS, and tRPC HTTP route    |
+| `app/features/{dashboard,deputados,despesas,fornecedores}/` | Domain views and sections                                    |
+| `app/components/ui/`                                        | Custom reusable UI, including errors, pagination, and totals |
+| `app/components/layout/`                                    | Header, footer, and theme toggle                             |
+| `app/contexts/`                                             | Filter values and actions scoped to a view                   |
+| `app/hooks/`                                                | Query hooks, debounce, and filter helpers                    |
+| `app/lib/`                                                  | tRPC provider/query client and formatting helpers            |
+| `app/interfaces/`                                           | Existing UI interfaces                                       |
+| `server/trpc/`                                              | Context, router composition, and procedures                  |
+| `server/services/`                                          | Service interfaces/factories and dependency wiring           |
+| `server/repositories/`                                      | Drizzle queries and result mapping/validation                |
+| `server/schemas/`                                           | Zod contracts and inferred domain types                      |
+| `server/db/client.ts`                                       | Server-only Neon/Drizzle client                              |
+| `drizzle/`                                                  | Actual database schema, relations, and migration artifacts   |
 
 ## Routes and current scope
 
-| URL                | Entry point                             | Current behavior                                                                         |
-| ------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `/`                | `app/page.tsx`                          | Dashboard filter controls and introductory content; overview metrics are not implemented |
-| `/deputados`       | `app/(publico)/deputados/page.tsx`      | Filtered, paginated deputy list                                                          |
-| `/deputados/[id]`  | `app/(publico)/deputados/[id]/page.tsx` | Deputy profile, history, and scoped expenses                                             |
-| `/despesas`        | `app/(publico)/despesas/page.tsx`       | Expense filters, totals, sorting, and pagination                                         |
-| `/api/trpc/[trpc]` | `app/api/trpc/[trpc]/route.ts`          | tRPC handler exported as GET and POST                                                    |
+| URL                  | Entry point                                | Current behavior                                                                         |
+| -------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `/`                  | `app/page.tsx`                             | Dashboard filter controls and introductory content; overview metrics are not implemented |
+| `/deputados`         | `app/(publico)/deputados/page.tsx`         | Filtered, paginated deputy list                                                          |
+| `/deputados/[id]`    | `app/(publico)/deputados/[id]/page.tsx`    | Deputy profile, history, and scoped expenses                                             |
+| `/fornecedores`      | `app/(publico)/fornecedores/page.tsx`      | Searchable, sortable, paginated supplier list                                            |
+| `/fornecedores/[id]` | `app/(publico)/fornecedores/[id]/page.tsx` | Supplier details and related expenses across legislatures                                |
+| `/despesas`          | `app/(publico)/despesas/page.tsx`          | Expense filters, totals, sorting, and pagination                                         |
+| `/api/trpc/[trpc]`   | `app/api/trpc/[trpc]/route.ts`             | tRPC handler exported as GET and POST                                                    |
 
 `(publico)` is a route group, not a URL segment.
 
@@ -67,7 +69,7 @@ by root `AGENTS.md`.
 - Deputy and expense providers split values/actions into separate contexts. Filter
   changes reset page to 1; expense sorting updates column/direction together.
 - `initialFilters` is captured once; reset returns to that provider's initial values,
-  preserving a deputy constraint on profile pages.
+  preserving deputy/supplier constraints and the initial legislature on profile pages.
 - Component state owns local interactions such as menu expansion and photo failure.
 - `ThemeToggle` owns theme selection and persists the `theme` localStorage key.
 

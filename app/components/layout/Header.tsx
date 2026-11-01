@@ -9,6 +9,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const navItems = [
   { href: "/", label: "Visão geral" },
   { href: "/deputados", label: "Deputados" },
+  { href: "/fornecedores", label: "Fornecedores" },
   { href: "/despesas", label: "Despesas" },
 ] as const;
 
@@ -55,7 +56,9 @@ const HeaderContent = () => {
           className="hidden items-center gap-6 text-sm font-medium md:flex"
         >
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
             return (
               <Link
@@ -112,7 +115,9 @@ const HeaderContent = () => {
           className="space-y-1 border-t border-border bg-surface px-4 py-3 md:hidden"
         >
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
             return (
               <Link

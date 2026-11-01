@@ -12,8 +12,9 @@ import {
 import type { DespesaOrdenarPor } from "@/server/schemas/despesa.schema";
 
 export interface IDespesasFilters {
-  legislaturaId: number;
+  legislaturaId: number | undefined;
   deputadoId: number | undefined;
+  fornecedorId: number | undefined;
   tipoDespesaId: number | undefined;
   fromMonth: string; // "" = sem limite
   toMonth: string;
@@ -39,6 +40,7 @@ export interface IDespesasFiltersActions {
 const DEFAULT_FILTERS: IDespesasFilters = {
   legislaturaId: 57,
   deputadoId: undefined,
+  fornecedorId: undefined,
   tipoDespesaId: undefined,
   fromMonth: "",
   toMonth: "",

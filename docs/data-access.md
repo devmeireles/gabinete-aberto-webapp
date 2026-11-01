@@ -28,9 +28,14 @@ middleware:
 - `legislatura.list`
 - `deputado.list`, `deputado.detail`, `deputado.opcoesFiltro`
 - `despesa.list`, `despesa.tipos`
+- `fornecedor.list`, `fornecedor.detail`
 
 POST transport support does not imply that mutation procedures exist.
 `deputado.detail` raises tRPC `NOT_FOUND` when the repository returns `null`.
+`fornecedor.detail` raises `NOT_FOUND` for an unknown supplier ID. Supplier list
+and detail contracts live in `server/schemas/fornecedor.schema.ts`. Supplier
+list joins expenses once, groups by supplier, and sums gross document values;
+this aggregate also supports ordering by total declared value.
 
 ## Validation and serialization
 
@@ -57,6 +62,10 @@ use five minutes and `keepPreviousData`; text search is debounced by 400 ms, omi
 terms shorter than two characters, and pauses querying while typing. Deputy birth
 years are sent only after four digits. Detail uses one hour and disables retries;
 legislatures, filter options, and expense types use one-day stale and GC times.
+
+Supplier search is debounced by 400 ms and ignores terms shorter than two
+characters. Supplier detail uses the expense list with a fixed supplier ID and
+all legislatures selected initially; the legislature filter can narrow that view.
 
 Filter contexts contain UI state rather than fetched data. See
 [data-access rules](data-access-rules.md) for query invariants and

@@ -44,8 +44,8 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
     : todasLegislaturas;
 
   // O intervalo de meses de uma legislatura não vale para outra: limpa junto.
-  const handleLegislaturaChange = (legislaturaId: number): void => {
-    setFilter("legislaturaId", legislaturaId);
+  const handleLegislaturaChange = (value: string): void => {
+    setFilter("legislaturaId", value ? Number(value) : undefined);
     setFilter("fromMonth", "");
     setFilter("toMonth", "");
   };
@@ -78,10 +78,11 @@ export const DespesasFilters = ({ legislaturaIds }: IDespesasFiltersProps) => {
           </label>
           <select
             id="filter-legislatura"
-            value={filters.legislaturaId}
-            onChange={(e) => handleLegislaturaChange(Number(e.target.value))}
+            value={filters.legislaturaId ?? ""}
+            onChange={(e) => handleLegislaturaChange(e.target.value)}
             className={FIELD_CLASS}
           >
+            {!legislaturaIds && <option value="">Todas as legislaturas</option>}
             {legislaturas.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.id}ª ({l.dataInicio.slice(0, 4)}–{l.dataFim.slice(0, 4)})

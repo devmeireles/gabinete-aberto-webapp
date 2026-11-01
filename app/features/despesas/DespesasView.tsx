@@ -1,6 +1,7 @@
 "use client";
 
 import { TotalsBar } from "@/app/components/ui/TotalsBar";
+import { TotalsBarSkeleton } from "@/app/components/ui/LoadingState";
 import { useDespesasActiveFiltersCount } from "@/app/hooks/use-despesas-active-filters-count";
 import { useDespesas } from "@/app/hooks/use-despesas";
 import { DespesasFilters } from "./DespesasFilters";
@@ -8,7 +9,7 @@ import { DespesasResults } from "./DespesasResults";
 
 export const DespesasView = () => {
   const activeFiltersCount = useDespesasActiveFiltersCount();
-  const { data, isPlaceholderData } = useDespesas();
+  const { data, isPending, isPlaceholderData } = useDespesas();
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
@@ -39,6 +40,7 @@ export const DespesasView = () => {
           dimmed={isPlaceholderData}
         />
       )}
+      {isPending && !data && <TotalsBarSkeleton />}
 
       <DespesasResults />
     </div>

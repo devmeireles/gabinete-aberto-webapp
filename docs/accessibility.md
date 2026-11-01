@@ -13,8 +13,8 @@ accessibility audit or custom zero-warning contract in this repository.
   `aria-controls`. The theme toggle has a name describing the current mode.
 - Many decorative Lucide icons use `aria-hidden="true"`; deputy photos have alt
   text and missing-photo fallbacks have labels.
-- Loading feedback uses status/`aria-busy` states in feature results and the
-  detail skeleton. Empty results use the shared `EmptyState` component.
+- Loading feedback uses labeled status/`aria-busy` skeletons that preserve the
+  feature layout. Empty results use the shared `EmptyState` component.
 - Data-loading failures use the shared `ErrorState` alert with a retry action where
   retrying is meaningful. A missing deputy is announced as a status, not a
   retriable network error.

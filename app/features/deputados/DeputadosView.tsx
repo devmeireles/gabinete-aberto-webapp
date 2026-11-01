@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DeputyAvatar } from "@/app/components/ui/DeputyAvatar";
 import { EmptyState } from "@/app/components/ui/EmptyState";
 import { ErrorState } from "@/app/components/ui/ErrorState";
+import { CardGridSkeleton } from "@/app/components/ui/LoadingState";
 import { Pagination } from "@/app/components/ui/Pagination";
 import { useDeputadosFiltersActions } from "@/app/contexts/deputados-filters.context";
 import { useDeputados } from "@/app/hooks/use-deputados";
@@ -20,9 +21,12 @@ export const DeputadosView = () => {
       <DeputadosFilters />
 
       {isPending && !data ? (
-        <p className="text-sm text-text-muted" role="status" aria-busy="true">
-          Carregando deputados...
-        </p>
+        <CardGridSkeleton
+          label="Carregando deputados"
+          kind="deputy"
+          count={8}
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        />
       ) : null}
 
       {isError && !data ? (

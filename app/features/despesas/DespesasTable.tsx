@@ -167,12 +167,13 @@ export const DespesasTable = ({
               </td>
 
               <td className="max-w-xs px-3 py-3 font-sans text-text">
-                <div
-                  className="truncate font-medium"
+                <Link
+                  href={`/fornecedores/${item.fornecedorId}`}
+                  className="block truncate rounded font-medium hover:text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   title={item.fornecedorNome}
                 >
                   {item.fornecedorNome}
-                </div>
+                </Link>
                 <div className="font-mono text-[10px] text-text-subtle">
                   {item.fornecedorCnpjCpf}
                 </div>

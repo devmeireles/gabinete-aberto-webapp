@@ -1,0 +1,49 @@
+import { z } from "zod";
+
+const fornecedorIdSchema = z
+  .string()
+  .regex(/^[1-9]\d*$/, "ID do fornecedor inválido")
+  .refine((value) => Number.isSafeInteger(Number(value)), {
+    message: "ID do fornecedor fora do intervalo permitido",
+  })
+  .transform(Number);
+
+export const fornecedorListInputSchema = z.object({
+  busca: z.string().trim().min(2).max(100).optional(),
+  ordenarPor: z.enum(["nome", "cnpjCpf", "totalBruto"]).default("nome"),
+  ordem: z.enum(["asc", "desc"]).default("asc"),
+  pagina: z.number().int().min(1).default(1),
+  itens: z.number().int().min(1).max(100).default(20),
+});
+
+export const fornecedorDetailInputSchema = z.object({
+  id: fornecedorIdSchema,
+});
+
+export const fornecedorListItemSchema = z.object({
+  id: z.string(),
+  nome: z.string(),
+  cnpjCpf: z.string(),
+  totalBruto: z.number(),
+});
+
+export const fornecedorListResultSchema = z.object({
+  items: z.array(fornecedorListItemSchema),
+  total: z.number().int(),
+  pagina: z.number().int(),
+  itens: z.number().int(),
+  totalPaginas: z.number().int(),
+});
+
+export const fornecedorDetailSchema = z.object({
+  id: z.string(),
+  nome: z.string(),
+  cnpjCpf: z.string(),
+});
+
+export type FornecedorListInput = z.infer<typeof fornecedorListInputSchema>;
+export type FornecedorListItem = z.infer<typeof fornecedorListItemSchema>;
+export type FornecedorListResult = z.infer<typeof fornecedorListResultSchema>;
+export type FornecedorDetailInput = z.infer<typeof fornecedorDetailInputSchema>;
+export type FornecedorDetail = z.infer<typeof fornecedorDetailSchema>;
+export type FornecedorOrdenarPor = FornecedorListInput["ordenarPor"];

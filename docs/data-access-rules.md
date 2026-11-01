@@ -24,7 +24,9 @@ in server schemas, and client fetching in feature hooks.
 `server/schemas/despesa.schema.ts` defines the sortable columns in
 `DESPESA_ORDENAR_POR`. Its repository map and table controls use the same domain.
 
-- `legislaturaId` is required; deputy/type, supplier, and month bounds are optional.
+- `legislaturaId`, deputy, supplier ID/text, type, and month bounds are optional.
+  The public expenses page supplies its configured legislature; supplier profiles
+  omit it initially to include expenses across all legislatures.
 - Months use `YYYY-MM`; bounds compare the expense `(ano, mes)` tuple inclusively,
   rather than filtering `dataDocumento`.
 - Inverted month bounds naturally return no matches; the service does not throw.
@@ -45,6 +47,11 @@ The app reads the existing Câmara-domain database. There is no crawler, ingesti
 service, Inngest workflow, seed command, or external API client in this repository.
 Crawler/raw-payload tables in `drizzle/schema.ts` do not establish a runnable
 ingestion process or verify its schedule.
+
+Supplier list totals are the sum of linked expenses' gross document values
+(`valorDocumento`), not verified supplier payments. The list computes this with a
+single grouped join; expenses have an index on `fornecedorId`. If list volume or
+query cost grows, measure the query before considering a maintained summary table.
 
 `server/db/client.ts` reads server-side `process.env.DATABASE_URL` directly; there
 is no `env.ts` validation module. Never expose the connection string through a

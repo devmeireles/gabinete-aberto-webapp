@@ -2,6 +2,7 @@
 
 import { DeputyAvatar } from "@/app/components/ui/DeputyAvatar";
 import { ErrorState } from "@/app/components/ui/ErrorState";
+import { DetailSkeleton } from "@/app/components/ui/LoadingState";
 import { useDeputadoDetalhe } from "@/app/hooks/use-deputado-detalhe";
 import {
   formatBirthDate,
@@ -39,9 +40,7 @@ export const DeputadoDetailView = ({ id }: IDeputadoDetailViewProps) => {
 
   if (isPending) {
     return (
-      <p className="p-6 text-sm text-text-muted" role="status" aria-busy="true">
-        Carregando perfil do deputado...
-      </p>
+      <DetailSkeleton label="Carregando perfil do deputado" kind="deputy" />
     );
   }
 

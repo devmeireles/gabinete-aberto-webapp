@@ -60,12 +60,16 @@ function escapeLike(value: string): string {
 export function createDespesaRepository(db: Database): IDespesaRepository {
   return {
     async list(input: DespesaListInput): Promise<DespesaListResult> {
-      const conditions: SQL[] = [
-        eq(despesas.legislaturaId, input.legislaturaId),
-      ];
+      const conditions: SQL[] = [];
 
+      if (input.legislaturaId) {
+        conditions.push(eq(despesas.legislaturaId, input.legislaturaId));
+      }
       if (input.deputadoId) {
         conditions.push(eq(despesas.deputadoId, input.deputadoId));
+      }
+      if (input.fornecedorId) {
+        conditions.push(eq(despesas.fornecedorId, input.fornecedorId));
       }
       if (input.tipoDespesaId) {
         conditions.push(eq(despesas.tipoDespesaId, input.tipoDespesaId));
@@ -106,6 +110,7 @@ export function createDespesaRepository(db: Database): IDespesaRepository {
           .select({
             id: despesas.id,
             deputadoId: despesas.deputadoId,
+            fornecedorId: despesas.fornecedorId,
             deputadoNome: deputados.nome,
             siglaPartido: deputadoDetalhes.siglaPartido,
             siglaUf: deputadoLegislaturas.siglaUf,
@@ -160,6 +165,7 @@ export function createDespesaRepository(db: Database): IDespesaRepository {
         items: rows.map((row) => ({
           ...row,
           id: String(row.id),
+          fornecedorId: String(row.fornecedorId),
           valorDocumento: Number(row.valorDocumento),
           valorGlosa: Number(row.valorGlosa),
           valorLiquido: Number(row.valorLiquido),

@@ -1,11 +1,16 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
+import { DetailSkeleton } from "@/app/components/ui/LoadingState";
 import { DeputadoDetailView } from "@/app/features/deputados/DeputadoDetailView";
 
 export default function DeputadoPage({ params }: PageProps<"/deputados/[id]">) {
   return (
-    <Suspense fallback={<DeputadoDetailSkeleton />}>
+    <Suspense
+      fallback={
+        <DetailSkeleton label="Carregando perfil do deputado" kind="deputy" />
+      }
+    >
       <DeputadoContent params={params} />
     </Suspense>
   );
@@ -24,14 +29,4 @@ async function DeputadoContent({
   }
 
   return <DeputadoDetailView id={deputadoId} />;
-}
-
-function DeputadoDetailSkeleton() {
-  return (
-    <div className="animate-pulse space-y-4 p-6" aria-busy="true">
-      <div className="h-24 w-24 rounded-full bg-surface" />
-      <div className="h-6 w-1/3 rounded bg-surface" />
-      <div className="h-4 w-1/2 rounded bg-surface" />
-    </div>
-  );
 }

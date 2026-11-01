@@ -9,8 +9,8 @@ Use existing components and dependencies before proposing a new abstraction.
 - `app/components/ui/`: reusable domain-oriented UI (`DeputyAvatar`, `EmptyState`,
   `Pagination`, `TotalsBar`). This is not an upstream primitive directory.
 - `app/components/layout/`: `Header`, `Footer`, `ThemeToggle`.
-- `app/features/dashboard/`, `deputados/`, `despesas/`: feature views, filters,
-  tables, and profile sections.
+- `app/features/dashboard/`, `deputados/`, `despesas/`, `fornecedores/`: feature
+  views, filters, tables, and profile sections.
 - `app/hooks/`: query and reusable behavior hooks.
 - `app/contexts/`: filter providers and their value/action hooks.
 

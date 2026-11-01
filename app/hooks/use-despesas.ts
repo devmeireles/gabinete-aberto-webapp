@@ -26,8 +26,9 @@ export function useDespesas() {
   const isTyping: boolean = fornecedor !== debouncedFornecedor;
 
   const input = {
-    legislaturaId: filters.legislaturaId,
+    ...(filters.legislaturaId && { legislaturaId: filters.legislaturaId }),
     ...(filters.deputadoId && { deputadoId: filters.deputadoId }),
+    ...(filters.fornecedorId && { fornecedorId: filters.fornecedorId }),
     ...(filters.tipoDespesaId && { tipoDespesaId: filters.tipoDespesaId }),
     ...(filters.fromMonth && { fromMonth: filters.fromMonth }),
     ...(filters.toMonth && { toMonth: filters.toMonth }),
