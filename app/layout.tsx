@@ -6,6 +6,7 @@ import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { TRPCReactProvider } from "./lib/trpc/client";
 import { GoogleAnalytics } from "./components/layout/GoogleAnalytics";
+import { RouteTitleFallback } from "./components/layout/RouteTitleFallback";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,8 +65,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         <Suspense fallback={null}>
-          <GoogleAnalytics />
+          <RouteTitleFallback />
         </Suspense>
+        <GoogleAnalytics />
         <TRPCReactProvider>
           <div className="flex min-h-screen flex-col bg-(--color-background) text-text">
             <Header />
