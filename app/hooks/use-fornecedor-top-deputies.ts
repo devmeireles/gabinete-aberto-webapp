@@ -4,9 +4,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { useDespesasFilters } from "@/app/contexts/despesas-filters.context";
 import { useDebouncedValue } from "@/app/hooks/use-debounced-value";
+import { SEVEN_DAYS_MS } from "@/app/lib/cache-durations";
 import { useTRPC } from "@/app/lib/trpc/client";
 
-const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const FORNECEDOR_DEBOUNCE_MS = 400;
 const FORNECEDOR_MIN_LENGTH = 2;
 
@@ -33,7 +33,8 @@ export function useFornecedorTopDeputies(fornecedorId: number) {
   const query = useQuery(
     trpc.fornecedor.topDeputies.queryOptions(input, {
       placeholderData: keepPreviousData,
-      staleTime: FIVE_MINUTES_MS,
+      staleTime: SEVEN_DAYS_MS,
+      gcTime: SEVEN_DAYS_MS,
       enabled: !isTyping,
     }),
   );

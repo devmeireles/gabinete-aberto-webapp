@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import { ONE_HOUR_MS } from "@/app/lib/cache-durations";
 import { useTRPC } from "@/app/lib/trpc/client";
-
-const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export function useFornecedorDetalhe(id: string) {
   const trpc = useTRPC();
@@ -12,7 +11,7 @@ export function useFornecedorDetalhe(id: string) {
   return useQuery(
     trpc.fornecedor.detail.queryOptions(
       { id },
-      { staleTime: ONE_HOUR_MS, retry: false },
+      { staleTime: ONE_HOUR_MS, gcTime: ONE_HOUR_MS, retry: false },
     ),
   );
 }

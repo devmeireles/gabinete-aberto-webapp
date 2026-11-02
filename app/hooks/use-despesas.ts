@@ -8,9 +8,9 @@ import {
   type IDespesasFilters,
 } from "@/app/contexts/despesas-filters.context";
 import { useDebouncedValue } from "@/app/hooks/use-debounced-value";
+import { SEVEN_DAYS_MS } from "@/app/lib/cache-durations";
 import { useTRPC } from "@/app/lib/trpc/client";
 
-const FIVE_MINUTES_MS: number = 5 * 60 * 1000;
 const FORNECEDOR_DEBOUNCE_MS: number = 400;
 const FORNECEDOR_MIN_LENGTH: number = 2; // o servidor exige min(2)
 
@@ -44,7 +44,8 @@ export function useDespesas() {
   return useQuery(
     trpc.despesa.list.queryOptions(input, {
       placeholderData: keepPreviousData,
-      staleTime: FIVE_MINUTES_MS,
+      staleTime: SEVEN_DAYS_MS,
+      gcTime: SEVEN_DAYS_MS,
       enabled: !isTyping,
     }),
   );

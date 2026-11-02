@@ -7,9 +7,9 @@ import {
   type IDeputadosFilters,
 } from "@/app/contexts/deputados-filters.context";
 import { useDebouncedValue } from "@/app/hooks/use-debounced-value";
+import { SEVEN_DAYS_MS } from "@/app/lib/cache-durations";
 import { useTRPC } from "@/app/lib/trpc/client";
 
-const FIVE_MINUTES_MS: number = 5 * 60 * 1000;
 const TEXT_DEBOUNCE_MS: number = 400;
 const TEXT_MIN_LENGTH: number = 2; // o servidor exige min(2)
 
@@ -62,7 +62,8 @@ export function useDeputados() {
   return useQuery(
     trpc.deputado.list.queryOptions(input, {
       placeholderData: keepPreviousData,
-      staleTime: FIVE_MINUTES_MS,
+      staleTime: SEVEN_DAYS_MS,
+      gcTime: SEVEN_DAYS_MS,
       enabled: !isTyping,
     }),
   );

@@ -4,8 +4,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/app/lib/trpc/client";
-
-const ONE_DAY_MS: number = 24 * 60 * 60 * 1000;
+import { ONE_DAY_MS } from "@/app/lib/cache-durations";
 
 export function useTiposDespesa() {
   const trpc = useTRPC();
