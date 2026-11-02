@@ -3,6 +3,7 @@
 import { DespesasFiltersProvider } from "@/app/contexts/despesas-filters.context";
 import { DespesasFilters } from "@/app/features/despesas/DespesasFilters";
 import { DespesasResults } from "@/app/features/despesas/DespesasResults";
+import { DeputadoExpensesCharts } from "./DeputadoExpensesCharts";
 import { DeputadoIndicadores } from "./DeputadoIndicadores";
 
 interface IDeputadoDespesasProps {
@@ -22,16 +23,21 @@ export const DeputadoDespesas = ({
     <DespesasFiltersProvider
       initialFilters={{ deputadoId, legislaturaId: maisRecente }}
     >
-      <DeputadoDespesasContent legislaturaIds={legislaturaIds} />
+      <DeputadoDespesasContent
+        deputadoId={deputadoId}
+        legislaturaIds={legislaturaIds}
+      />
     </DespesasFiltersProvider>
   );
 };
 
 interface IDeputadoDespesasContentProps {
+  deputadoId: number;
   legislaturaIds: number[];
 }
 
 const DeputadoDespesasContent = ({
+  deputadoId,
   legislaturaIds,
 }: IDeputadoDespesasContentProps) => {
   return (
@@ -46,6 +52,7 @@ const DeputadoDespesasContent = ({
 
       <DeputadoIndicadores />
       <DespesasFilters legislaturaIds={legislaturaIds} />
+      <DeputadoExpensesCharts deputadoId={deputadoId} />
       <DespesasResults showDeputado={false} />
     </section>
   );

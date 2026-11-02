@@ -28,6 +28,44 @@ export const despesaListInputSchema = z.object({
   itens: z.number().int().min(1).max(100).default(20),
 });
 
+export const despesaAnalyticsInputSchema = z.object({
+  legislaturaId: z.number().int().positive(),
+  deputadoId: z.number().int().positive(),
+  fornecedorId: z.number().int().positive().safe().optional(),
+  tipoDespesaId: z.number().int().positive().optional(),
+  fromMonth: monthSchema.optional(),
+  toMonth: monthSchema.optional(),
+  fornecedor: z.string().trim().min(2).max(100).optional(),
+});
+
+export const despesaAnalyticsResultSchema = z.object({
+  evolucaoMensal: z.array(
+    z.object({
+      ano: z.number().int(),
+      mes: z.number().int(),
+      totalLiquido: z.number(),
+      totalRegistros: z.number().int(),
+    }),
+  ),
+  distribuicaoPorTipo: z.array(
+    z.object({
+      tipoDespesaId: z.number().int(),
+      tipoDespesa: z.string(),
+      totalLiquido: z.number(),
+      totalRegistros: z.number().int(),
+    }),
+  ),
+  maioresFornecedores: z.array(
+    z.object({
+      fornecedorId: z.number().int(),
+      nome: z.string(),
+      cnpjCpf: z.string(),
+      totalLiquido: z.number(),
+      totalRegistros: z.number().int(),
+    }),
+  ),
+});
+
 export const despesaItemSchema = z.object({
   id: z.string(), // bigint do banco serializado como string
   deputadoId: z.number().int(),
@@ -65,6 +103,10 @@ export const tipoDespesaSchema = z.object({
 });
 
 export type DespesaListInput = z.infer<typeof despesaListInputSchema>;
+export type DespesaAnalyticsInput = z.infer<typeof despesaAnalyticsInputSchema>;
+export type DespesaAnalyticsResult = z.infer<
+  typeof despesaAnalyticsResultSchema
+>;
 export type DespesaItem = z.infer<typeof despesaItemSchema>;
 export type DespesaListResult = z.infer<typeof despesaListResultSchema>;
 export type TipoDespesa = z.infer<typeof tipoDespesaSchema>;

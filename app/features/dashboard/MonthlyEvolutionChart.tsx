@@ -15,12 +15,17 @@ import {
   formatCompactCurrency,
   formatInteger,
 } from "@/app/lib/formartters.lib";
-import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 interface IMonthlyEvolutionChartProps {
-  data: DashboardMetrics["evolucaoMensal"];
+  data: {
+    ano: number;
+    mes: number;
+    totalLiquido: number;
+    totalRegistros: number;
+  }[];
   fromMonth: string;
   toMonth?: string;
+  className?: string;
 }
 
 const MAX_FILLED_MONTHS = 240;
@@ -29,6 +34,7 @@ export const MonthlyEvolutionChart = ({
   data,
   fromMonth,
   toMonth,
+  className,
 }: IMonthlyEvolutionChartProps) => {
   const monthIndex = (value: string): number => {
     const [year, month] = value.split("-").map(Number);
@@ -69,7 +75,7 @@ export const MonthlyEvolutionChart = ({
   return (
     <section
       aria-labelledby="monthly-evolution-title"
-      className="min-w-0 rounded-xl border border-border bg-surface p-5"
+      className={`min-w-0 rounded-xl border border-border bg-surface p-5 ${className ?? ""}`}
     >
       <div className="mb-5">
         <h2

@@ -2,6 +2,8 @@
 import "server-only";
 
 import {
+  despesaAnalyticsInputSchema,
+  type DespesaAnalyticsResult,
   despesaListInputSchema,
   type DespesaListResult,
   type TipoDespesa,
@@ -10,6 +12,12 @@ import {
 import { baseProcedure, createTRPCRouter } from "../init";
 
 export const despesaRouter = createTRPCRouter({
+  analytics: baseProcedure
+    .input(despesaAnalyticsInputSchema)
+    .query(({ ctx, input }): Promise<DespesaAnalyticsResult> =>
+      ctx.despesaService.analytics(input),
+    ),
+
   list: baseProcedure
     .input(despesaListInputSchema)
     .query(({ ctx, input }): Promise<DespesaListResult> =>

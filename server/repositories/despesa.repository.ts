@@ -23,9 +23,13 @@ import {
   tiposDespesa,
 } from "@/drizzle/schema";
 import {
+  despesaAnalyticsInputSchema,
+  despesaAnalyticsResultSchema,
   despesaListResultSchema,
   DespesaOrdenarPor,
   tipoDespesaSchema,
+  type DespesaAnalyticsInput,
+  type DespesaAnalyticsResult,
   type DespesaListInput,
   type DespesaListResult,
   type TipoDespesa,
@@ -34,6 +38,7 @@ import {
 /** Data access for despesas (cota parlamentar). */
 export interface IDespesaRepository {
   list(input: DespesaListInput): Promise<DespesaListResult>;
+  analytics(input: DespesaAnalyticsInput): Promise<DespesaAnalyticsResult>;
   listTipos(): Promise<TipoDespesa[]>;
 }
 
@@ -57,46 +62,60 @@ function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, "\\$&");
 }
 
+type DespesaFilterInput = Pick<
+  DespesaListInput,
+  | "legislaturaId"
+  | "deputadoId"
+  | "fornecedorId"
+  | "tipoDespesaId"
+  | "fromMonth"
+  | "toMonth"
+  | "fornecedor"
+>;
+
+function buildDespesaWhere(input: DespesaFilterInput): SQL | undefined {
+  const conditions: SQL[] = [];
+
+  if (input.legislaturaId) {
+    conditions.push(eq(despesas.legislaturaId, input.legislaturaId));
+  }
+  if (input.deputadoId) {
+    conditions.push(eq(despesas.deputadoId, input.deputadoId));
+  }
+  if (input.fornecedorId) {
+    conditions.push(eq(despesas.fornecedorId, input.fornecedorId));
+  }
+  if (input.tipoDespesaId) {
+    conditions.push(eq(despesas.tipoDespesaId, input.tipoDespesaId));
+  }
+  if (input.fromMonth) {
+    const { ano, mes } = parseMonth(input.fromMonth);
+    conditions.push(
+      sql`(${despesas.ano}, ${despesas.mes}) >= (${ano}, ${mes})`,
+    );
+  }
+  if (input.toMonth) {
+    const { ano, mes } = parseMonth(input.toMonth);
+    conditions.push(
+      sql`(${despesas.ano}, ${despesas.mes}) <= (${ano}, ${mes})`,
+    );
+  }
+  if (input.fornecedor) {
+    const pattern: string = `%${escapeLike(input.fornecedor)}%`;
+    const match: SQL | undefined = or(
+      ilike(fornecedores.nome, pattern),
+      ilike(fornecedores.cnpjCpf, pattern),
+    );
+    if (match) conditions.push(match);
+  }
+
+  return and(...conditions);
+}
+
 export function createDespesaRepository(db: Database): IDespesaRepository {
   return {
     async list(input: DespesaListInput): Promise<DespesaListResult> {
-      const conditions: SQL[] = [];
-
-      if (input.legislaturaId) {
-        conditions.push(eq(despesas.legislaturaId, input.legislaturaId));
-      }
-      if (input.deputadoId) {
-        conditions.push(eq(despesas.deputadoId, input.deputadoId));
-      }
-      if (input.fornecedorId) {
-        conditions.push(eq(despesas.fornecedorId, input.fornecedorId));
-      }
-      if (input.tipoDespesaId) {
-        conditions.push(eq(despesas.tipoDespesaId, input.tipoDespesaId));
-      }
-      if (input.fromMonth) {
-        const { ano, mes } = parseMonth(input.fromMonth);
-        // Comparação de tupla: o Postgres consegue usar o índice (legislatura, ano, mes).
-        conditions.push(
-          sql`(${despesas.ano}, ${despesas.mes}) >= (${ano}, ${mes})`,
-        );
-      }
-      if (input.toMonth) {
-        const { ano, mes } = parseMonth(input.toMonth);
-        conditions.push(
-          sql`(${despesas.ano}, ${despesas.mes}) <= (${ano}, ${mes})`,
-        );
-      }
-      if (input.fornecedor) {
-        const pattern: string = `%${escapeLike(input.fornecedor)}%`;
-        const match: SQL | undefined = or(
-          ilike(fornecedores.nome, pattern),
-          ilike(fornecedores.cnpjCpf, pattern),
-        );
-        if (match) conditions.push(match);
-      }
-
-      const where: SQL | undefined = and(...conditions);
+      const where = buildDespesaWhere(input);
 
       // `nulls last`: no Postgres, DESC põe NULL primeiro, e dataDocumento é nullable.
       const orderColumn = ORDER_COLUMNS[input.ordenarPor];
@@ -177,6 +196,77 @@ export function createDespesaRepository(db: Database): IDespesaRepository {
         pagina: input.pagina,
         itens: input.itens,
         totalPaginas: Math.max(1, Math.ceil(total / input.itens)),
+      });
+    },
+
+    async analytics(
+      input: DespesaAnalyticsInput,
+    ): Promise<DespesaAnalyticsResult> {
+      const where = buildDespesaWhere(despesaAnalyticsInputSchema.parse(input));
+      const [monthlyRows, categoryRows, supplierRows] = await Promise.all([
+        db
+          .select({
+            ano: despesas.ano,
+            mes: despesas.mes,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .innerJoin(fornecedores, eq(fornecedores.id, despesas.fornecedorId))
+          .where(where)
+          .groupBy(despesas.ano, despesas.mes)
+          .orderBy(asc(despesas.ano), asc(despesas.mes)),
+
+        db
+          .select({
+            tipoDespesaId: tiposDespesa.id,
+            tipoDespesa: tiposDespesa.nome,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .innerJoin(fornecedores, eq(fornecedores.id, despesas.fornecedorId))
+          .innerJoin(tiposDespesa, eq(tiposDespesa.id, despesas.tipoDespesaId))
+          .where(where)
+          .groupBy(tiposDespesa.id, tiposDespesa.nome)
+          .orderBy(desc(sum(despesas.valorLiquido))),
+
+        db
+          .select({
+            fornecedorId: fornecedores.id,
+            nome: fornecedores.nome,
+            cnpjCpf: fornecedores.cnpjCpf,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .innerJoin(fornecedores, eq(fornecedores.id, despesas.fornecedorId))
+          .where(where)
+          .groupBy(fornecedores.id, fornecedores.nome, fornecedores.cnpjCpf)
+          .orderBy(desc(sum(despesas.valorLiquido)), asc(fornecedores.nome))
+          .limit(5),
+      ]);
+
+      return despesaAnalyticsResultSchema.parse({
+        evolucaoMensal: monthlyRows.map((row) => ({
+          ano: row.ano,
+          mes: row.mes,
+          totalLiquido: Number(row.totalLiquido ?? 0),
+          totalRegistros: row.totalRegistros,
+        })),
+        distribuicaoPorTipo: categoryRows.map((row) => ({
+          tipoDespesaId: Number(row.tipoDespesaId),
+          tipoDespesa: row.tipoDespesa,
+          totalLiquido: Number(row.totalLiquido ?? 0),
+          totalRegistros: row.totalRegistros,
+        })),
+        maioresFornecedores: supplierRows.map((row) => ({
+          fornecedorId: Number(row.fornecedorId),
+          nome: row.nome,
+          cnpjCpf: row.cnpjCpf,
+          totalLiquido: Number(row.totalLiquido ?? 0),
+          totalRegistros: row.totalRegistros,
+        })),
       });
     },
 

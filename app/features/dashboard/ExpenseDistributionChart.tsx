@@ -6,10 +6,14 @@ import {
   formatCompactCurrency,
   formatCurrency,
 } from "@/app/lib/formartters.lib";
-import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 interface IExpenseDistributionChartProps {
-  data: DashboardMetrics["distribuicaoPorTipo"];
+  data: {
+    tipoDespesaId: number;
+    tipoDespesa: string;
+    totalLiquido: number;
+    totalRegistros: number;
+  }[];
 }
 
 const CHART_COLORS = [
