@@ -20,6 +20,33 @@ export const fornecedorDetailInputSchema = z.object({
   id: fornecedorIdSchema,
 });
 
+export const fornecedorTopDeputiesInputSchema = z.object({
+  fornecedorId: z.number().int().positive().safe(),
+  legislaturaId: z.number().int().positive().optional(),
+  tipoDespesaId: z.number().int().positive().optional(),
+  fromMonth: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Formato esperado: AAAA-MM")
+    .optional(),
+  toMonth: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Formato esperado: AAAA-MM")
+    .optional(),
+  fornecedor: z.string().trim().min(2).max(100).optional(),
+});
+
+export const fornecedorTopDeputiesSchema = z.array(
+  z.object({
+    deputadoId: z.number().int(),
+    nome: z.string(),
+    siglaPartido: z.string().nullable(),
+    siglaUf: z.string().nullable(),
+    urlFoto: z.string().nullable(),
+    totalLiquido: z.number(),
+    totalRegistros: z.number().int(),
+  }),
+);
+
 export const fornecedorListItemSchema = z.object({
   id: z.string(),
   nome: z.string(),
@@ -48,4 +75,10 @@ export type FornecedorListItem = z.infer<typeof fornecedorListItemSchema>;
 export type FornecedorListResult = z.infer<typeof fornecedorListResultSchema>;
 export type FornecedorDetailInput = z.infer<typeof fornecedorDetailInputSchema>;
 export type FornecedorDetail = z.infer<typeof fornecedorDetailSchema>;
+export type FornecedorTopDeputiesInput = z.infer<
+  typeof fornecedorTopDeputiesInputSchema
+>;
+export type FornecedorTopDeputy = z.infer<
+  typeof fornecedorTopDeputiesSchema
+>[number];
 export type FornecedorOrdenarPor = FornecedorListInput["ordenarPor"];

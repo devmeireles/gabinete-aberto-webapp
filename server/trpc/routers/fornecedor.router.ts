@@ -5,8 +5,10 @@ import { TRPCError } from "@trpc/server";
 import {
   fornecedorDetailInputSchema,
   fornecedorListInputSchema,
+  fornecedorTopDeputiesInputSchema,
   type FornecedorDetail,
   type FornecedorListResult,
+  type FornecedorTopDeputy,
 } from "@/server/schemas/fornecedor.schema";
 import { baseProcedure, createTRPCRouter } from "../init";
 
@@ -31,4 +33,10 @@ export const fornecedorRouter = createTRPCRouter({
 
       return fornecedor;
     }),
+
+  topDeputies: baseProcedure
+    .input(fornecedorTopDeputiesInputSchema)
+    .query(({ ctx, input }): Promise<FornecedorTopDeputy[]> =>
+      ctx.fornecedorService.topDeputies(input),
+    ),
 });

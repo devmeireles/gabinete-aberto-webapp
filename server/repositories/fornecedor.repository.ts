@@ -4,6 +4,7 @@ import {
   and,
   asc,
   count,
+  desc,
   eq,
   ilike,
   inArray,
@@ -13,23 +14,41 @@ import {
   type SQL,
 } from "drizzle-orm";
 
-import { despesas, fornecedores, tiposDespesa } from "@/drizzle/schema";
+import {
+  deputadoDetalhes,
+  deputados,
+  despesas,
+  fornecedores,
+  tiposDespesa,
+} from "@/drizzle/schema";
 import type { Database } from "@/server/db/client";
 import {
   fornecedorDetailSchema,
   fornecedorListResultSchema,
+  fornecedorTopDeputiesInputSchema,
+  fornecedorTopDeputiesSchema,
   type FornecedorDetail,
   type FornecedorListInput,
   type FornecedorListResult,
+  type FornecedorTopDeputiesInput,
+  type FornecedorTopDeputy,
 } from "@/server/schemas/fornecedor.schema";
 
 export interface IFornecedorRepository {
   list(input: FornecedorListInput): Promise<FornecedorListResult>;
   detail(id: number): Promise<FornecedorDetail | null>;
+  topDeputies(
+    input: FornecedorTopDeputiesInput,
+  ): Promise<FornecedorTopDeputy[]>;
 }
 
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, "\\$&");
+}
+
+function parseMonth(value: string): { ano: number; mes: number } {
+  const [ano, mes] = value.split("-").map(Number);
+  return { ano, mes };
 }
 
 export function createFornecedorRepository(
@@ -156,6 +175,82 @@ export function createFornecedorRepository(
         ...row,
         id: String(row.id),
       });
+    },
+
+    async topDeputies(
+      input: FornecedorTopDeputiesInput,
+    ): Promise<FornecedorTopDeputy[]> {
+      const filters = fornecedorTopDeputiesInputSchema.parse(input);
+      const conditions = [eq(despesas.fornecedorId, filters.fornecedorId)];
+
+      if (filters.legislaturaId) {
+        conditions.push(eq(despesas.legislaturaId, filters.legislaturaId));
+      }
+      if (filters.tipoDespesaId) {
+        conditions.push(eq(despesas.tipoDespesaId, filters.tipoDespesaId));
+      }
+      if (filters.fromMonth) {
+        const { ano, mes } = parseMonth(filters.fromMonth);
+        conditions.push(
+          sql`(${despesas.ano}, ${despesas.mes}) >= (${ano}, ${mes})`,
+        );
+      }
+      if (filters.toMonth) {
+        const { ano, mes } = parseMonth(filters.toMonth);
+        conditions.push(
+          sql`(${despesas.ano}, ${despesas.mes}) <= (${ano}, ${mes})`,
+        );
+      }
+      if (filters.fornecedor) {
+        const pattern = `%${escapeLike(filters.fornecedor)}%`;
+        const match = or(
+          ilike(fornecedores.nome, pattern),
+          ilike(fornecedores.cnpjCpf, pattern),
+        );
+        if (match) conditions.push(match);
+      }
+
+      const deputyTotal = sum(despesas.valorLiquido).as("total_liquido");
+      const deputyRecords = count().as("total_registros");
+      const topDeputies = db
+        .select({
+          deputadoId: despesas.deputadoId,
+          totalLiquido: deputyTotal,
+          totalRegistros: deputyRecords,
+        })
+        .from(despesas)
+        .innerJoin(fornecedores, eq(fornecedores.id, despesas.fornecedorId))
+        .where(and(...conditions))
+        .groupBy(despesas.deputadoId)
+        .orderBy(desc(deputyTotal), asc(despesas.deputadoId))
+        .limit(5)
+        .as("top_deputies");
+      const rows = await db
+        .select({
+          deputadoId: topDeputies.deputadoId,
+          nome: sql<string>`coalesce(nullif(trim(${deputadoDetalhes.nomeEleitoral}), ''), ${deputados.nome})`,
+          siglaPartido: deputadoDetalhes.siglaPartido,
+          siglaUf: deputadoDetalhes.siglaUf,
+          urlFoto: sql<
+            string | null
+          >`coalesce(${deputadoDetalhes.urlFoto}, ${deputados.urlFoto})`,
+          totalLiquido: topDeputies.totalLiquido,
+          totalRegistros: topDeputies.totalRegistros,
+        })
+        .from(topDeputies)
+        .innerJoin(deputados, eq(deputados.id, topDeputies.deputadoId))
+        .leftJoin(
+          deputadoDetalhes,
+          eq(deputadoDetalhes.deputadoId, topDeputies.deputadoId),
+        )
+        .orderBy(desc(topDeputies.totalLiquido), asc(topDeputies.deputadoId));
+
+      return fornecedorTopDeputiesSchema.parse(
+        rows.map((row) => ({
+          ...row,
+          totalLiquido: Number(row.totalLiquido ?? 0),
+        })),
+      );
     },
   };
 }

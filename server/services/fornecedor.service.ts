@@ -5,11 +5,16 @@ import type {
   FornecedorDetail,
   FornecedorListInput,
   FornecedorListResult,
+  FornecedorTopDeputiesInput,
+  FornecedorTopDeputy,
 } from "@/server/schemas/fornecedor.schema";
 
 export interface IFornecedorService {
   list(input: FornecedorListInput): Promise<FornecedorListResult>;
   detail(id: number): Promise<FornecedorDetail | null>;
+  topDeputies(
+    input: FornecedorTopDeputiesInput,
+  ): Promise<FornecedorTopDeputy[]>;
 }
 
 export function createFornecedorService(
@@ -21,6 +26,9 @@ export function createFornecedorService(
     },
     detail(id) {
       return repository.detail(id);
+    },
+    topDeputies(input) {
+      return repository.topDeputies(input);
     },
   };
 }

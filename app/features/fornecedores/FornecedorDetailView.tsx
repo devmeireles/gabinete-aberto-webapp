@@ -11,6 +11,7 @@ import { useDespesas } from "@/app/hooks/use-despesas";
 import { useFornecedorDetalhe } from "@/app/hooks/use-fornecedor-detalhe";
 import { DespesasFilters } from "@/app/features/despesas/DespesasFilters";
 import { DespesasResults } from "@/app/features/despesas/DespesasResults";
+import { FornecedorTopDeputies } from "./FornecedorTopDeputies";
 
 interface IFornecedorDetailViewProps {
   id: string;
@@ -69,13 +70,13 @@ export const FornecedorDetailView = ({ id }: IFornecedorDetailViewProps) => {
           legislaturaId: undefined,
         }}
       >
-        <FornecedorExpenses />
+        <FornecedorExpenses fornecedorId={Number(data.id)} />
       </DespesasFiltersProvider>
     </div>
   );
 };
 
-const FornecedorExpenses = () => {
+const FornecedorExpenses = ({ fornecedorId }: { fornecedorId: number }) => {
   const activeFiltersCount = useDespesasActiveFiltersCount();
   const { data, isPlaceholderData } = useDespesas();
 
@@ -103,6 +104,8 @@ const FornecedorExpenses = () => {
           dimmed={isPlaceholderData}
         />
       )}
+
+      <FornecedorTopDeputies fornecedorId={fornecedorId} />
 
       <DespesasResults />
     </section>
