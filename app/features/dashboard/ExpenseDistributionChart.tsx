@@ -31,18 +31,18 @@ export const ExpenseDistributionChart = ({
   const categories =
     data.length > 6
       ? [
-          ...data.slice(0, 5),
-          {
-            tipoDespesaId: 0,
-            tipoDespesa: `Outras categorias (${data.length - 5})`,
-            totalLiquido: data
-              .slice(5)
-              .reduce((total, category) => total + category.totalLiquido, 0),
-            totalRegistros: data
-              .slice(5)
-              .reduce((total, category) => total + category.totalRegistros, 0),
-          },
-        ]
+        ...data.slice(0, 5),
+        {
+          tipoDespesaId: 0,
+          tipoDespesa: `Outras categorias (${data.length - 5})`,
+          totalLiquido: data
+            .slice(5)
+            .reduce((total, category) => total + category.totalLiquido, 0),
+          totalRegistros: data
+            .slice(5)
+            .reduce((total, category) => total + category.totalRegistros, 0),
+        },
+      ]
       : data;
 
   return (
@@ -62,7 +62,7 @@ export const ExpenseDistributionChart = ({
         </p>
       </div>
 
-      <div className="grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+      <div className="grid min-w-0 items-center gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div
           role="img"
           aria-label="Gráfico de rosca da distribuição de despesas por categoria"
@@ -104,25 +104,28 @@ export const ExpenseDistributionChart = ({
           </ResponsiveContainer>
         </div>
 
-        <ul className="space-y-2">
+        <ul className="min-w-0 space-y-2">
           {categories.map((category, index) => (
             <li
               key={category.tipoDespesaId}
-              className="flex min-w-0 items-start gap-2 text-xs"
+              className="grid min-w-0 grid-cols-[0.625rem_minmax(0,1fr)_auto] items-start gap-x-1.5 text-[11px] sm:gap-x-2"
             >
               <span
                 aria-hidden="true"
-                className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+                className="mt-1 h-2.5 w-2.5 rounded-full"
                 style={{
                   backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
                 }}
               />
-              <span className="min-w-0 flex-1 truncate text-text">
+              <span
+                title={category.tipoDespesa}
+                className="max-w-[30ch] min-w-0 truncate text-text md:max-w-[24ch]"
+              >
                 {category.tipoDespesa}
               </span>
               <span
                 title={formatCurrency(category.totalLiquido)}
-                className="shrink-0 font-mono text-text-muted tabular-nums"
+                className="font-mono text-[10px] whitespace-nowrap text-text-muted tabular-nums sm:text-[11px]"
               >
                 {formatCompactCurrency(category.totalLiquido)}
               </span>
