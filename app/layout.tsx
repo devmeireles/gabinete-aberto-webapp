@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { TRPCReactProvider } from "./lib/trpc/client";
+import { GoogleAnalytics } from "./components/layout/GoogleAnalytics";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,9 +18,42 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gabinete Aberto | Dados Abertos da Câmara",
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : undefined,
+  title: {
+    default: "Gabinete Aberto",
+    template: "%s | Gabinete Aberto",
+  },
   description:
-    "Consulte deputados federais, perfis, histórico partidário e despesas da CEAP.",
+    "Explore dados públicos da Câmara dos Deputados: parlamentares, fornecedores e despesas da Cota Parlamentar (CEAP).",
+  applicationName: "Gabinete Aberto",
+  keywords: [
+    "dados abertos",
+    "Câmara dos Deputados",
+    "deputados federais",
+    "despesas parlamentares",
+    "CEAP",
+    "Cota Parlamentar",
+  ],
+  openGraph: {
+    title: "Gabinete Aberto",
+    description:
+      "Explore dados públicos da Câmara dos Deputados: parlamentares, fornecedores e despesas da Cota Parlamentar (CEAP).",
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Gabinete Aberto",
+  },
+  twitter: {
+    card: "summary",
+    title: "Gabinete Aberto",
+    description:
+      "Explore dados públicos da Câmara dos Deputados: parlamentares, fornecedores e despesas da Cota Parlamentar (CEAP).",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -28,6 +63,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <TRPCReactProvider>
           <div className="flex min-h-screen flex-col bg-(--color-background) text-text">
             <Header />

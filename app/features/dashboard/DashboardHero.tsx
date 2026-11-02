@@ -21,12 +21,12 @@ export const DashboardHero = ({ totais }: IDashboardHeroProps) => (
     className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 p-6 text-white shadow-xl sm:p-10"
   >
     <div className="relative z-10 max-w-3xl space-y-3">
-      <h2
+      <h1
         id="dashboard-hero-title"
         className="text-2xl leading-tight font-black tracking-tight text-white sm:text-4xl"
       >
         Para onde vai o dinheiro da Cota Parlamentar?
-      </h2>
+      </h1>
       <p className="text-sm leading-relaxed text-emerald-100/90 sm:text-base">
         A CEAP cobre despesas do exercício do mandato, como passagens,
         divulgação, combustíveis e manutenção de escritórios. Explore os valores
@@ -94,8 +94,9 @@ const HeroMetric = ({
           exactValue ? `${label}: ${exactValue}` : `${label}: ${value}`
         }
         title={exactValue}
-        className={`mt-1 block text-2xl font-black sm:text-3xl ${emphasis === "accent" ? "text-emerald-300" : "text-white"
-          }`}
+        className={`mt-1 block text-2xl font-black sm:text-3xl ${
+          emphasis === "accent" ? "text-emerald-300" : "text-white"
+        }`}
       >
         {value}
       </span>

@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { DashboardView } from "./features/dashboard/DashboardView";
+import { createPageMetadata } from "./lib/seo";
+
+export const metadata: Metadata = createPageMetadata(
+  "Para onde vai o dinheiro da Cota Parlamentar?",
+  "Explore despesas da Cota Parlamentar (CEAP), valores declarados, parlamentares e fornecedores com dados públicos da Câmara dos Deputados.",
+);
 
 export default function Home() {
   return (

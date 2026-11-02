@@ -18,6 +18,16 @@ export const DeputadosView = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <header className="border-b border-border pb-5">
+        <h1 className="text-2xl font-bold tracking-tight text-text">
+          Deputados federais
+        </h1>
+        <p className="mt-1 text-sm text-text-muted">
+          Consulte perfis parlamentares, partidos, estados e histórico dos
+          deputados federais.
+        </p>
+      </header>
+
       <DeputadosFilters />
 
       {isPending && !data ? (
