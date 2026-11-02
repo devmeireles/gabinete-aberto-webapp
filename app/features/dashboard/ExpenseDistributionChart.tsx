@@ -2,7 +2,10 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import { formatCurrency } from "@/app/lib/formartters.lib";
+import {
+  formatCompactCurrency,
+  formatCurrency,
+} from "@/app/lib/formartters.lib";
 import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 interface IExpenseDistributionChartProps {
@@ -82,7 +85,7 @@ export const ExpenseDistributionChart = ({
               </Pie>
               <Tooltip
                 formatter={(value) => [
-                  formatCurrency(Number(value)),
+                  formatCompactCurrency(Number(value)),
                   "Valor líquido",
                 ]}
                 contentStyle={{
@@ -113,8 +116,11 @@ export const ExpenseDistributionChart = ({
               <span className="min-w-0 flex-1 truncate text-text">
                 {category.tipoDespesa}
               </span>
-              <span className="shrink-0 font-mono text-text-muted tabular-nums">
-                {formatCurrency(category.totalLiquido)}
+              <span
+                title={formatCurrency(category.totalLiquido)}
+                className="shrink-0 font-mono text-text-muted tabular-nums"
+              >
+                {formatCompactCurrency(category.totalLiquido)}
               </span>
             </li>
           ))}

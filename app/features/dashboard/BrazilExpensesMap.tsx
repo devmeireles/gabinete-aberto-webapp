@@ -3,7 +3,11 @@
 import BrazilMap from "@svg-maps/brazil";
 import { useMemo, useState } from "react";
 
-import { formatCurrency, formatInteger } from "@/app/lib/formartters.lib";
+import {
+  formatCompactCurrency,
+  formatCurrency,
+  formatInteger,
+} from "@/app/lib/formartters.lib";
 import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
 
 interface IBrazilExpensesMapProps {
@@ -271,11 +275,13 @@ export const BrazilExpensesMap = ({
           <div className="grid grid-cols-2 gap-3">
             <MetricCard
               label="Total líquido declarado"
-              value={formatCurrency(displayedTotalLiquido)}
+              value={formatCompactCurrency(displayedTotalLiquido)}
+              exactValue={formatCurrency(displayedTotalLiquido)}
             />
             <MetricCard
               label="Média por deputado"
-              value={formatCurrency(averagePerDeputy)}
+              value={formatCompactCurrency(averagePerDeputy)}
+              exactValue={formatCurrency(averagePerDeputy)}
             />
             <MetricCard
               label="Deputados na bancada"
@@ -298,7 +304,7 @@ export const BrazilExpensesMap = ({
           {selectedUf && despesasSemUf.totalRegistros > 0 && (
             <p className="border-t border-border pt-3 text-[11px] leading-relaxed text-text-muted">
               {formatInteger(despesasSemUf.totalRegistros)} documentos (
-              {formatCurrency(despesasSemUf.totalLiquido)}) não têm UF
+              {formatCompactCurrency(despesasSemUf.totalLiquido)}) não têm UF
               identificada e não são atribuídos a nenhum estado no mapa.
             </p>
           )}
@@ -311,14 +317,18 @@ export const BrazilExpensesMap = ({
 interface IMetricCardProps {
   label: string;
   value: string;
+  exactValue?: string;
 }
 
-const MetricCard = ({ label, value }: IMetricCardProps) => (
+const MetricCard = ({ label, value, exactValue }: IMetricCardProps) => (
   <div className="min-w-0 rounded-lg border border-border bg-surface p-3">
     <span className="block text-[10px] font-medium text-text-muted">
       {label}
     </span>
-    <span className="mt-1 block truncate font-mono text-sm font-bold text-text tabular-nums sm:text-base">
+    <span
+      title={exactValue}
+      className="mt-1 block truncate font-mono text-sm font-bold text-text tabular-nums sm:text-base"
+    >
       {value}
     </span>
   </div>

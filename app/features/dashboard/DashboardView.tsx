@@ -6,7 +6,7 @@ import { LoadingSpinner } from "@/app/components/ui/LoadingState";
 import { useDashboardMetrics } from "@/app/hooks/use-dashboard-metrics";
 import { DashboardHero } from "./DashboardHero";
 import { DashboardLoadingState } from "./DashboardLoadingState";
-import { DashboardPartySummary } from "./DashboardPartySummary";
+import { DashboardConcentration } from "./DashboardConcentration";
 import { CitizenEquivalenceSimulator } from "./CitizenEquivalenceSimulator";
 import { BrazilExpensesMap } from "./BrazilExpensesMap";
 import { ExpenseDistributionChart } from "./ExpenseDistributionChart";
@@ -77,7 +77,11 @@ const DashboardMetricsView = () => {
                 />
                 <ExpenseDistributionChart data={data.distribuicaoPorTipo} />
               </div>
-              <DashboardPartySummary data={data.maioresGastosPartidos} />
+              <DashboardConcentration
+                partidos={data.maioresGastosPartidos}
+                parlamentares={data.maioresGastosParlamentares}
+                fornecedores={data.maioresGastosFornecedores}
+              />
             </>
           )}
         </div>

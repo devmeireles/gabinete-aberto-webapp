@@ -1,4 +1,8 @@
-import { formatCurrency, formatInteger } from "@/app/lib/formartters.lib";
+import {
+  formatCompactCurrency,
+  formatCurrency,
+  formatInteger,
+} from "@/app/lib/formartters.lib";
 
 export interface ITotais {
   valorBruto: number;
@@ -48,8 +52,11 @@ export const TotalsBar = ({
             <div className="text-[11px] font-medium text-text-muted">
               Valor Bruto Declarado
             </div>
-            <div className="font-mono text-base font-semibold text-text tabular-nums">
-              {formatCurrency(totais.valorBruto)}
+            <div
+              title={formatCurrency(totais.valorBruto)}
+              className="font-mono text-base font-semibold text-text tabular-nums"
+            >
+              {formatCompactCurrency(totais.valorBruto)}
             </div>
           </div>
 
@@ -60,8 +67,11 @@ export const TotalsBar = ({
                 (retido)
               </span>
             </div>
-            <div className="font-mono text-base font-semibold text-warning tabular-nums">
-              {formatCurrency(totais.valorGlosa)}
+            <div
+              title={formatCurrency(totais.valorGlosa)}
+              className="font-mono text-base font-semibold text-warning tabular-nums"
+            >
+              {formatCompactCurrency(totais.valorGlosa)}
             </div>
           </div>
 
@@ -69,8 +79,11 @@ export const TotalsBar = ({
             <div className="text-[11px] font-medium text-primary">
               Valor Líquido Ressarcido
             </div>
-            <div className="font-mono text-lg font-bold text-primary tabular-nums">
-              {formatCurrency(totais.valorLiquido)}
+            <div
+              title={formatCurrency(totais.valorLiquido)}
+              className="font-mono text-lg font-bold text-primary tabular-nums"
+            >
+              {formatCompactCurrency(totais.valorLiquido)}
             </div>
           </div>
         </div>

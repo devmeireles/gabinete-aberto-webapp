@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   and,
+  asc,
   count,
   countDistinct,
   desc,
@@ -15,9 +16,12 @@ import {
 
 import type { Database } from "@/server/db/client";
 import {
+  deputadoDetalhes,
+  deputados,
   deputadoPartidoVigencias,
   deputadoLegislaturas,
   despesas,
+  fornecedores,
   legislaturas,
   partidoLegislaturas,
   partidos,
@@ -66,6 +70,8 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
         stateRows,
         partyRows,
         membersRows,
+        deputyRows,
+        supplierRows,
       ] = await Promise.all([
         db
           .select({
@@ -167,6 +173,52 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
           .select({ total: count() })
           .from(deputadoLegislaturas)
           .where(eq(deputadoLegislaturas.legislaturaId, currentLegislatura.id)),
+
+        db
+          .select({
+            deputadoId: despesas.deputadoId,
+            nome: sql<string>`coalesce(nullif(trim(${deputadoDetalhes.nomeEleitoral}), ''), ${deputados.nome})`,
+            siglaPartido: deputadoDetalhes.siglaPartido,
+            siglaUf: deputadoDetalhes.siglaUf,
+            urlFoto: deputadoDetalhes.urlFoto,
+            totalLiquido: sum(despesas.valorLiquido),
+            totalRegistros: count(),
+          })
+          .from(despesas)
+          .innerJoin(deputados, eq(deputados.id, despesas.deputadoId))
+          .leftJoin(
+            deputadoDetalhes,
+            and(
+              eq(deputadoDetalhes.deputadoId, despesas.deputadoId),
+              eq(deputadoDetalhes.statusLegislaturaId, currentLegislatura.id),
+            ),
+          )
+          .where(where)
+          .groupBy(
+            despesas.deputadoId,
+            deputados.nome,
+            deputadoDetalhes.nomeEleitoral,
+            deputadoDetalhes.siglaPartido,
+            deputadoDetalhes.siglaUf,
+            deputadoDetalhes.urlFoto,
+          )
+          .orderBy(desc(sum(despesas.valorLiquido)), asc(despesas.deputadoId))
+          .limit(5),
+
+        db
+          .select({
+            fornecedorId: fornecedores.id,
+            nome: fornecedores.nome,
+            cnpjCpf: fornecedores.cnpjCpf,
+            totalLiquido: sum(despesas.valorLiquido),
+            parlamentaresComDespesas: countDistinct(despesas.deputadoId),
+          })
+          .from(despesas)
+          .innerJoin(fornecedores, eq(fornecedores.id, despesas.fornecedorId))
+          .where(where)
+          .groupBy(fornecedores.id, fornecedores.nome, fornecedores.cnpjCpf)
+          .orderBy(desc(sum(despesas.valorLiquido)), asc(fornecedores.id))
+          .limit(5),
       ]);
 
       const totals = totalsRows[0];
@@ -225,6 +277,22 @@ export function createDashboardRepository(db: Database): IDashboardRepository {
           nome: row.nome,
           totalLiquido: Number(row.totalLiquido ?? 0),
           totalRegistros: row.totalRegistros,
+          parlamentaresComDespesas: row.parlamentaresComDespesas,
+        })),
+        maioresGastosParlamentares: deputyRows.map((row) => ({
+          deputadoId: row.deputadoId,
+          nome: row.nome,
+          siglaPartido: row.siglaPartido,
+          siglaUf: row.siglaUf,
+          urlFoto: row.urlFoto,
+          totalLiquido: Number(row.totalLiquido ?? 0),
+          totalRegistros: row.totalRegistros,
+        })),
+        maioresGastosFornecedores: supplierRows.map((row) => ({
+          fornecedorId: Number(row.fornecedorId),
+          nome: row.nome,
+          cnpjCpf: row.cnpjCpf,
+          totalLiquido: Number(row.totalLiquido ?? 0),
           parlamentaresComDespesas: row.parlamentaresComDespesas,
         })),
       });

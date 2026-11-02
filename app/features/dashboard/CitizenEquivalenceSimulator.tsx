@@ -3,7 +3,10 @@
 import { Calculator } from "lucide-react";
 import { useState } from "react";
 
-import { formatCurrency } from "@/app/lib/formartters.lib";
+import {
+  formatCompactCurrency,
+  formatCurrency,
+} from "@/app/lib/formartters.lib";
 
 const MINIMUM_WAGE_REFERENCE = 1_509;
 const BASIC_FOOD_BASKET_REFERENCE = 830;
@@ -84,9 +87,10 @@ export const CitizenEquivalenceSimulator = ({
           </label>
           <output
             htmlFor="equivalence-amount"
+            title={formatCurrency(amount)}
             className="font-mono text-2xl font-black text-primary"
           >
-            {formatCurrency(amount)}
+            {formatCompactCurrency(amount)}
           </output>
         </div>
 
@@ -107,8 +111,10 @@ export const CitizenEquivalenceSimulator = ({
           aria-hidden="true"
           className="flex justify-between gap-3 font-mono text-[11px] text-text-muted"
         >
-          <span>{formatCurrency(0)}</span>
-          <span>{formatCurrency(totalLiquido)}</span>
+          <span>{formatCompactCurrency(0)}</span>
+          <span title={formatCurrency(totalLiquido)}>
+            {formatCompactCurrency(totalLiquido)}
+          </span>
         </div>
       </div>
 

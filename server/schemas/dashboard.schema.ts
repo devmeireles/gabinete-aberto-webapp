@@ -55,6 +55,26 @@ export const dashboardMetricsSchema = z.object({
       parlamentaresComDespesas: z.number().int(),
     }),
   ),
+  maioresGastosParlamentares: z.array(
+    z.object({
+      deputadoId: z.number().int(),
+      nome: z.string(),
+      siglaPartido: z.string().nullable(),
+      siglaUf: z.string().nullable(),
+      urlFoto: z.string().nullable(),
+      totalLiquido: z.number(),
+      totalRegistros: z.number().int(),
+    }),
+  ),
+  maioresGastosFornecedores: z.array(
+    z.object({
+      fornecedorId: z.number().int(),
+      nome: z.string(),
+      cnpjCpf: z.string(),
+      totalLiquido: z.number(),
+      parlamentaresComDespesas: z.number().int(),
+    }),
+  ),
 });
 
 export type DashboardMetricsInput = z.infer<typeof dashboardMetricsInputSchema>;

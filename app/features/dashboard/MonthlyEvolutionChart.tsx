@@ -12,7 +12,7 @@ import {
 
 import {
   formatCompetencia,
-  formatCurrency,
+  formatCompactCurrency,
   formatInteger,
 } from "@/app/lib/formartters.lib";
 import type { DashboardMetrics } from "@/server/schemas/dashboard.schema";
@@ -24,12 +24,6 @@ interface IMonthlyEvolutionChartProps {
 }
 
 const MAX_FILLED_MONTHS = 240;
-const compactCurrency = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 
 export const MonthlyEvolutionChart = ({
   data,
@@ -112,16 +106,16 @@ export const MonthlyEvolutionChart = ({
               minTickGap={20}
             />
             <YAxis
-              width={76}
+              width={104}
               tickLine={false}
               axisLine={false}
-              tick={{ fill: "var(--color-text-muted)", fontSize: 10 }}
-              tickFormatter={(value: number) => compactCurrency.format(value)}
+              tick={{ fill: "var(--color-text-muted)", fontSize: 9 }}
+              tickFormatter={(value: number) => formatCompactCurrency(value)}
             />
             <Tooltip
               cursor={{ stroke: "var(--color-border)" }}
               formatter={(value, _name, item) => [
-                formatCurrency(Number(value)),
+                formatCompactCurrency(Number(value)),
                 `${formatInteger(Number(item.payload.totalRegistros))} documentos`,
               ]}
               labelFormatter={(label) => String(label)}

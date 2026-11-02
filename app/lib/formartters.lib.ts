@@ -74,15 +74,34 @@ export function formatCompactCurrency(
       singular: "milhão",
       plural: "milhões",
     },
+    {
+      threshold: 1_000,
+      divisor: 1_000,
+      singular: "mil",
+      plural: "mil",
+    },
   ] as const;
-  const unit = units.find(({ threshold }) => absoluteValue >= threshold);
+  let unitIndex = units.findIndex(
+    ({ threshold }) => absoluteValue >= threshold,
+  );
 
-  if (!unit) return formatCurrency(value);
+  if (unitIndex === -1) return formatCurrency(value);
 
-  const amount = value / unit.divisor;
+  let amount = value / units[unitIndex].divisor;
+  let roundedAmount = Math.round(Math.abs(amount) * 10) / 10;
+
+  if (roundedAmount >= 1_000 && unitIndex > 0) {
+    unitIndex--;
+    amount = value / units[unitIndex].divisor;
+    roundedAmount = Math.round(Math.abs(amount) * 10) / 10;
+  }
+
+  const unit = units[unitIndex];
+  const unitName =
+    unit.singular === unit.plural || roundedAmount < 2
+      ? unit.singular
+      : unit.plural;
   const formattedAmount = compactCurrencyNumberFormatter.format(amount);
-  const roundedAmount = Math.round(Math.abs(amount) * 10) / 10;
-  const unitName = roundedAmount >= 2 ? unit.plural : unit.singular;
 
   return `R$ ${formattedAmount} ${unitName}`;
 }

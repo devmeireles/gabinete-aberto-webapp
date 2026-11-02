@@ -14,6 +14,7 @@ import {
 } from "@/app/contexts/despesas-filters.context";
 import { useDespesas } from "@/app/hooks/use-despesas";
 import {
+  formatCompactCurrency,
   formatCurrency,
   formatInteger,
   formatPercent,
@@ -24,6 +25,7 @@ const EMPTY_VALUE: string = "—";
 interface IIndicatorCardProps {
   label: string;
   value: string;
+  exactValue?: string;
   caption: string;
   icon: LucideIcon;
   dimmed: boolean;
@@ -32,6 +34,7 @@ interface IIndicatorCardProps {
 const IndicatorCard = ({
   label,
   value,
+  exactValue,
   caption,
   icon: Icon,
   dimmed,
@@ -45,7 +48,9 @@ const IndicatorCard = ({
       <span>{label}</span>
       <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
     </div>
-    <div className="font-mono text-2xl font-bold text-text">{value}</div>
+    <div title={exactValue} className="font-mono text-2xl font-bold text-text">
+      {value}
+    </div>
     <div className="text-[11px] text-text-subtle">{caption}</div>
   </div>
 );
@@ -79,7 +84,8 @@ export const DeputadoIndicadores = () => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <IndicatorCard
           label="Valor Líquido Ressarcido"
-          value={data ? formatCurrency(data.totalLiquido) : EMPTY_VALUE}
+          value={data ? formatCompactCurrency(data.totalLiquido) : EMPTY_VALUE}
+          exactValue={data ? formatCurrency(data.totalLiquido) : undefined}
           caption="Cota para Atividade Parlamentar (CEAP)"
           icon={Receipt}
           dimmed={dimmed}
@@ -95,7 +101,8 @@ export const DeputadoIndicadores = () => {
 
         <IndicatorCard
           label="Valor Bruto Declarado"
-          value={data ? formatCurrency(data.totalBruto) : EMPTY_VALUE}
+          value={data ? formatCompactCurrency(data.totalBruto) : EMPTY_VALUE}
+          exactValue={data ? formatCurrency(data.totalBruto) : undefined}
           caption="Antes das glosas"
           icon={Banknote}
           dimmed={dimmed}
@@ -103,7 +110,8 @@ export const DeputadoIndicadores = () => {
 
         <IndicatorCard
           label="Glosa Retida"
-          value={data ? formatCurrency(data.totalGlosa) : EMPTY_VALUE}
+          value={data ? formatCompactCurrency(data.totalGlosa) : EMPTY_VALUE}
+          exactValue={data ? formatCurrency(data.totalGlosa) : undefined}
           caption={
             data
               ? `${formatPercent(glosaRatio)} do valor bruto declarado`

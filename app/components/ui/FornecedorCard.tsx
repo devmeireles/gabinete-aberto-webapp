@@ -2,7 +2,10 @@ import { FileText } from "lucide-react";
 import Link from "next/link";
 
 import { formatExpenseCategoryIcon } from "@/app/lib/expense-category-icon.lib";
-import { formatCurrency } from "@/app/lib/formartters.lib";
+import {
+  formatCompactCurrency,
+  formatCurrency,
+} from "@/app/lib/formartters.lib";
 import type { FornecedorListItem } from "@/server/schemas/fornecedor.schema";
 
 interface IFornecedorCardProps {
@@ -36,8 +39,11 @@ export const FornecedorCard = ({ fornecedor, href }: IFornecedorCardProps) => {
           Total bruto declarado
         </p>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xl font-extrabold text-text">
-            {formatCurrency(fornecedor.totalBruto)}
+          <span
+            title={formatCurrency(fornecedor.totalBruto)}
+            className="text-xl font-extrabold text-text"
+          >
+            {formatCompactCurrency(fornecedor.totalBruto)}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
             <FileText className="h-3.5 w-3.5" aria-hidden="true" />
