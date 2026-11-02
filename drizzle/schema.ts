@@ -9,27 +9,8 @@ export const deputados = pgTable("deputados", {
 	uri: text().notNull(),
 	urlFoto: text("url_foto"),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "deputados_source_payload_id_raw_payloads_id_fk"
-		}),
-]);
-
-export const rawPayloads = pgTable("raw_payloads", {
-	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
-	requestKey: text("request_key").notNull(),
-	contentHash: char("content_hash", { length: 64 }).notNull(),
-	payload: jsonb().notNull(),
-	firstFetchedAt: timestamp("first_fetched_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	uniqueIndex("raw_payloads_key_hash_uq").using("btree", table.requestKey.asc().nullsLast().op("text_ops"), table.contentHash.asc().nullsLast().op("text_ops")),
-]);
+});
 
 export const partidos = pgTable("partidos", {
 	id: integer().primaryKey().notNull(),
@@ -37,16 +18,9 @@ export const partidos = pgTable("partidos", {
 	nome: text().notNull(),
 	uri: text().notNull(),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	index("partidos_sigla_idx").using("btree", table.sigla.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "partidos_source_payload_id_raw_payloads_id_fk"
-		}),
 ]);
 
 export const deputadoPartidoVigencias = pgTable("deputado_partido_vigencias", {
@@ -57,16 +31,9 @@ export const deputadoPartidoVigencias = pgTable("deputado_partido_vigencias", {
 	dataInicio: timestamp("data_inicio", { mode: 'string' }),
 	dataFim: timestamp("data_fim", { mode: 'string' }),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 }, (table) => [
 	index("deputado_partido_vigencias_deputado_leg_idx").using("btree", table.deputadoId.asc().nullsLast().op("int4_ops"), table.legislaturaId.asc().nullsLast().op("int4_ops")),
 	uniqueIndex("deputado_partido_vigencias_deputado_leg_inicio_uq").using("btree", table.deputadoId.asc().nullsLast().op("int4_ops"), table.legislaturaId.asc().nullsLast().op("timestamp_ops"), table.dataInicio.asc().nullsLast().op("timestamp_ops")).where(sql`(data_inicio IS NOT NULL)`),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "deputado_partido_vigencias_source_payload_id_raw_payloads_id_fk"
-		}),
 	foreignKey({
 			columns: [table.deputadoId, table.legislaturaId],
 			foreignColumns: [deputadoLegislaturas.deputadoId, deputadoLegislaturas.legislaturaId],
@@ -99,20 +66,10 @@ export const bilhetesAereosCsv = pgTable("bilhetes_aereos_csv", {
 	trecho: text().notNull(),
 	arquivo: text().notNull(),
 	linha: integer().notNull(),
-	status: text().default('available').notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	associatedExpenseId: bigint("associated_expense_id", { mode: "number" }),
 }, (table) => [
-	index("bilhetes_aereos_csv_associated_expense_idx").using("btree", table.associatedExpenseId.asc().nullsLast().op("int8_ops")),
 	uniqueIndex("bilhetes_aereos_csv_identity_uq").using("btree", table.deputadoId.asc().nullsLast().op("int4_ops"), table.legislaturaId.asc().nullsLast().op("numeric_ops"), table.ano.asc().nullsLast().op("numeric_ops"), table.mes.asc().nullsLast().op("text_ops"), table.tipoDespesa.asc().nullsLast().op("timestamp_ops"), table.codDocumento.asc().nullsLast().op("text_ops"), table.codTipoDocumento.asc().nullsLast().op("int4_ops"), table.dataDocumento.asc().nullsLast().op("int4_ops"), table.numDocumento.asc().nullsLast().op("int4_ops"), table.parcela.asc().nullsLast().op("int4_ops"), table.codLote.asc().nullsLast().op("int4_ops"), table.valorDocumento.asc().nullsLast().op("numeric_ops"), table.passageiro.asc().nullsLast().op("int4_ops"), table.trecho.asc().nullsLast().op("int4_ops")),
 	index("bilhetes_aereos_csv_match_idx").using("btree", table.deputadoId.asc().nullsLast().op("text_ops"), table.legislaturaId.asc().nullsLast().op("text_ops"), table.ano.asc().nullsLast().op("timestamp_ops"), table.mes.asc().nullsLast().op("timestamp_ops"), table.codDocumento.asc().nullsLast().op("timestamp_ops"), table.dataDocumento.asc().nullsLast().op("timestamp_ops"), table.numDocumento.asc().nullsLast().op("int4_ops")),
-	index("bilhetes_aereos_csv_status_year_idx").using("btree", table.status.asc().nullsLast().op("text_ops"), table.ano.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.associatedExpenseId],
-			foreignColumns: [despesas.id],
-			name: "bilhetes_aereos_csv_associated_expense_id_despesas_id_fk"
-		}),
-	check("bilhetes_aereos_csv_association_status_chk", sql`((status = 'available'::text) AND (associated_expense_id IS NULL)) OR ((status = 'associated'::text) AND (associated_expense_id IS NOT NULL))`),
+	index("bilhetes_aereos_csv_year_idx").using("btree", table.ano.asc().nullsLast().op("int4_ops")),
 ]);
 
 export const tiposDespesa = pgTable("tipos_despesa", {
@@ -148,8 +105,6 @@ export const despesas = pgTable("despesas", {
 	trecho: text(),
 	bilheteMatchAmbiguo: boolean("bilhete_match_ambiguo").default(false).notNull(),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	index("despesas_fornecedor_idx").using("btree", table.fornecedorId.asc().nullsLast().op("int8_ops")),
@@ -164,11 +119,6 @@ export const despesas = pgTable("despesas", {
 			columns: [table.fornecedorId],
 			foreignColumns: [fornecedores.id],
 			name: "despesas_fornecedor_id_fornecedores_id_fk"
-		}),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "despesas_source_payload_id_raw_payloads_id_fk"
 		}),
 	foreignKey({
 			columns: [table.deputadoId, table.legislaturaId],
@@ -193,17 +143,9 @@ export const legislaturas = pgTable("legislaturas", {
 	dataInicio: date("data_inicio").notNull(),
 	dataFim: date("data_fim"),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	legislaturaAtual: boolean("legislatura_atual").default(false).notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "legislaturas_source_payload_id_raw_payloads_id_fk"
-		}),
-]);
+});
 
 export const crawlerRuns = pgTable("crawler_runs", {
 	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
@@ -225,20 +167,13 @@ export const crawlerRuns = pgTable("crawler_runs", {
 
 export const despesaConflicts = pgTable("despesa_conflicts", {
 	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }).notNull(),
 	naturalKey: text("natural_key").notNull(),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
 	payload: jsonb().notNull(),
 	reason: text().notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
-	uniqueIndex("despesa_conflicts_source_hash_uq").using("btree", table.sourcePayloadId.asc().nullsLast().op("int8_ops"), table.rowHash.asc().nullsLast().op("int8_ops")),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "despesa_conflicts_source_payload_id_raw_payloads_id_fk"
-		}),
+	uniqueIndex("despesa_conflicts_natural_key_hash_uq").using("btree", table.naturalKey.asc().nullsLast().op("text_ops"), table.rowHash.asc().nullsLast().op("char_ops")),
 ]);
 
 export const partidoDetalhes = pgTable("partido_detalhes", {
@@ -261,8 +196,6 @@ export const partidoDetalhes = pgTable("partido_detalhes", {
 	urlWebsite: text("url_website"),
 	urlFacebook: text("url_facebook"),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }).notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	lastFetchedAt: timestamp("last_fetched_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
@@ -276,11 +209,6 @@ export const partidoDetalhes = pgTable("partido_detalhes", {
 			columns: [table.statusLegislaturaId],
 			foreignColumns: [legislaturas.id],
 			name: "partido_detalhes_status_legislatura_id_legislaturas_id_fk"
-		}),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "partido_detalhes_source_payload_id_raw_payloads_id_fk"
 		}),
 ]);
 
@@ -314,8 +242,6 @@ export const deputadoDetalhes = pgTable("deputado_detalhes", {
 	gabineteTelefone: text("gabinete_telefone"),
 	gabineteEmail: text("gabinete_email"),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }).notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	statusNome: text("status_nome"),
 	statusUri: text("status_uri").notNull(),
@@ -332,19 +258,12 @@ export const deputadoDetalhes = pgTable("deputado_detalhes", {
 			foreignColumns: [legislaturas.id],
 			name: "deputado_detalhes_status_legislatura_id_legislaturas_id_fk"
 		}),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "deputado_detalhes_source_payload_id_raw_payloads_id_fk"
-		}),
 ]);
 
 export const partidoLegislaturas = pgTable("partido_legislaturas", {
 	partidoId: integer("partido_id").notNull(),
 	legislaturaId: integer("legislatura_id").notNull(),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
@@ -357,11 +276,6 @@ export const partidoLegislaturas = pgTable("partido_legislaturas", {
 			foreignColumns: [legislaturas.id],
 			name: "partido_legislaturas_legislatura_id_legislaturas_id_fk"
 		}),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "partido_legislaturas_source_payload_id_raw_payloads_id_fk"
-		}),
 	primaryKey({ columns: [table.partidoId, table.legislaturaId], name: "partido_legislaturas_partido_id_legislatura_id_pk"}),
 ]);
 
@@ -371,8 +285,6 @@ export const deputadoLegislaturas = pgTable("deputado_legislaturas", {
 	siglaUf: char("sigla_uf", { length: 2 }),
 	email: text(),
 	rowHash: char("row_hash", { length: 64 }).notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	sourcePayloadId: bigint("source_payload_id", { mode: "number" }),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
@@ -384,11 +296,6 @@ export const deputadoLegislaturas = pgTable("deputado_legislaturas", {
 			columns: [table.legislaturaId],
 			foreignColumns: [legislaturas.id],
 			name: "deputado_legislaturas_legislatura_id_legislaturas_id_fk"
-		}),
-	foreignKey({
-			columns: [table.sourcePayloadId],
-			foreignColumns: [rawPayloads.id],
-			name: "deputado_legislaturas_source_payload_id_raw_payloads_id_fk"
 		}),
 	primaryKey({ columns: [table.legislaturaId, table.deputadoId], name: "deputado_legislaturas_deputado_id_legislatura_id_pk"}),
 ]);
